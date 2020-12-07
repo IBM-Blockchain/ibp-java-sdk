@@ -1193,8 +1193,8 @@ public class Blockchain extends BaseService {
     com.ibm.cloud.sdk.core.util.Validator.notNull(getComponentsByTypeOptions,
       "getComponentsByTypeOptions cannot be null");
     Map<String, String> pathParamsMap = new HashMap<String, String>();
-    pathParamsMap.put("component-type", getComponentsByTypeOptions.componentType());
-    RequestBuilder builder = RequestBuilder.get(RequestBuilder.resolveRequestUrl(getServiceUrl(), "/ak/api/v3/components/types/{component-type}", pathParamsMap));
+    pathParamsMap.put("type", getComponentsByTypeOptions.type());
+    RequestBuilder builder = RequestBuilder.get(RequestBuilder.resolveRequestUrl(getServiceUrl(), "/ak/api/v3/components/types/{type}", pathParamsMap));
     Map<String, String> sdkHeaders = SdkCommon.getSdkHeaders("blockchain", "v3", "getComponentsByType");
     for (Entry<String, String> header : sdkHeaders.entrySet()) {
       builder.header(header.getKey(), header.getValue());

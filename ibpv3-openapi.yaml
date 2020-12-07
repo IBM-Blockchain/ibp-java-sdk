@@ -206,7 +206,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -233,24 +233,23 @@ paths:
                     - |-
                       # Create an authenticator
                       authenticator = IAMAuthenticator(
-                          apikey='{API-Key}'
+                        apikey='{API-Key}'
                       )
 
                       # Create client from the "BlockchainV3" class
-                      service = BlockchainV3(
-                          authenticator=authenticator
+                      client = BlockchainV3(
+                        authenticator=authenticator
                       )
-                      service.set_service_url('https://{API-Endpoint}')
+                      client.set_service_url('https://{API-Endpoint}')
 
                       # Get data for component
                       try:
-                          response = service.get_component(id='{Component-ID}')
-                          print(f'response: {response.result}')
-                          # handle good response here 
+                        response = client.get_component(id='{Component-ID}')
+                        print(f'response: {response.result}')
+                        # handle good response here 
                       except ApiException as e:
-                          print(f'error response: {e}')
-                          # handle error here
-
+                        print(f'error response: {e.message}')
+                        # handle error here
       #x-ibm-permissions:
       #  actions:
       #    - name: blockchain.optools.view
@@ -440,7 +439,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -458,6 +457,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Remove imported component
+                      try:
+                        response = client.remove_component(id='{Component-ID}')
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.remove
@@ -556,7 +581,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -574,7 +599,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
-                      
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Delete component
+                      try:
+                        response = client.delete_component(id='{Component-ID}')
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.delete
@@ -718,7 +768,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -765,6 +815,61 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Create CA parameters
+                      opts = {
+                        'display_name': 'My CA',
+                        'config_override': {
+                            'ca': {
+                                'registry': {
+                                    'maxenrollments': -1,
+                                    'identities': [
+                                        {
+                                            'name': 'admin',
+                                            'pass': 'password',
+                                            'type': 'client',
+                                            'affiliation': '',
+                                            'attrs': {
+                                                'hf.Registrar.Roles': '*',
+                                                'hf.Registrar.DelegateRoles': '*',
+                                                'hf.Revoker': True,
+                                                'hf.IntermediateCA': True,
+                                                'hf.GenCRL': True,
+                                                'hf.Registrar.Attributes': '*',
+                                                'hf.AffiliationMgr': True
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                      }
+
+                      # Create CA
+                      try:
+                        response = client.create_ca(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.create
@@ -951,7 +1056,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -962,22 +1067,22 @@ paths:
 
                       // Import CA parameters
                       const opts = {
-                          displayName: 'My Imported CA',
-                          apiUrl: 'https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:7054',
-                          operationsUrl: 'https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443',
-                          location: 'ibmcloud',
-                          msp: {
-                            ca: {
-                              name: 'ca'
-                            },
-                            tlsca: {
-                              name: 'tlsca'
-                            },
-                            component: {
-                              tls_cert: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo'
-                            }
+                        displayName: 'My Imported CA',
+                        apiUrl: 'https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:7054',
+                        operationsUrl: 'https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443',
+                        location: 'ibmcloud',
+                        msp: {
+                          ca: {
+                            name: 'ca'
+                          },
+                          tlsca: {
+                            name: 'tlsca'
+                          },
+                          component: {
+                            tls_cert: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo'
                           }
-                        };
+                        }
+                      };
 
                       // Import CA
                       try {
@@ -988,6 +1093,51 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Import CA parameters
+                      opts = {
+                        'display_name': 'My Imported CA',
+                        'api_url': 'https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:7054',
+                        'operations_url': 'https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443',
+                        'location': 'ibmcloud',
+                        'msp': {
+                          'ca': {
+                            'name': 'ca'
+                          },
+                          'tlsca': {
+                            'name': 'tlsca'
+                          },
+                          'component': {
+                            'tls_cert': 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo'
+                          }
+                        }
+                      };
+
+                      # Import CA
+                      try:
+                        response = client.import_ca(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.import
@@ -1154,7 +1304,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -1185,6 +1335,45 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Update CA parameters
+                      opts = {
+                        'id': '{Component-ID}',
+                        'resources': {
+                          'ca': {
+                            'requests': {
+                              'cpu': '200m',
+                              'memory': '256Mi'
+                            }
+                          }
+                        }
+                      }
+
+                      # Update CA
+                      try:
+                        response = client.update_ca(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.update
@@ -1340,7 +1529,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -1370,7 +1559,44 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
 
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Edit CA parameters
+                      opts = {
+                        'id': '{Component-ID}',
+                        'display_name': 'My Other CA',
+                        'tags': [
+                          'fabric-ca',
+                          'ibm_saas',
+                          'blue_team',
+                          'dev'
+                        ]
+                      }
+
+                      # Edit CA
+                      try:
+                        response = client.edit_ca(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.update
@@ -1528,7 +1754,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -1552,6 +1778,35 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Send CA Action
+                      try:
+                        response = client.ca_action(
+                          'id'='{Component-ID}',
+                          'restart'=True
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.configure
@@ -1713,7 +1968,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -1768,6 +2023,69 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Create Peer parameters
+                      opts = {
+                        'display_name': 'My Peer',
+                        'msp_id': 'org2',
+                        'crypto': {
+                          'enrollment': {
+                            'ca': {
+                              'host': 'n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud',
+                              'port': '7054',
+                              'name': 'ca',
+                              'tls_cert': 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo',
+                              'enroll_id': 'admin',
+                              'enroll_secret': 'password'
+                            },
+                            'tlsca': {
+                              'host': 'n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud',
+                              'port': '7054',
+                              'name': 'tlsca',
+                              'tls_cert': 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo',
+                              'enroll_id': 'admin',
+                              'enroll_secret': 'password'
+                            },
+                            'component': {
+                              'admincerts': [
+                                'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkFkbWluIGNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo='
+                              ]
+                            }
+                          }
+                        },
+                        'config_override': {
+                          'chaincode': {
+                            'startuptimeout': '480s',
+                            'executetimeout': '120s'
+                          }
+                        }
+                      };
+
+                      # Create Peer
+                      try:
+                        response = client.create_peer(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.create
@@ -1995,7 +2313,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -2042,6 +2360,61 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Import Peer parameters
+                      opts = {
+                        'display_name': 'My Imported Peer',
+                        'location': 'ibm cloud',
+                        'api_url': 'grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051',
+                        'msp_id': 'PeerOrg1',
+                        'operations_url': 'https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443',
+                        'grpcwp_url': 'https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084',
+                        'msp': {
+                          'component': {
+                            'tls_cert': 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tClRscyBjZXJ0IGRhdGEgd291bGQgYmUgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K',
+                            'ecert': 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCklkZW50aXR5IGRhdGEgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K',
+                            'admin_certs': [
+                              'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkFkbWluIGRhdGEgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K'
+                            ]
+                          },
+                          'tlsca': {
+                            'root_certs': [
+                              'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkRpZmZlcmVudCBkYXRhIGhlcmUgaWYgdGhpcyB3YXMgcmVhbAotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg'
+                            ]
+                          },
+                          'ca': {
+                            'root_certs': [
+                              'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkRpZmZlcmVudCBkYXRhIGhlcmUgaWYgdGhpcyB3YXMgcmVhbAotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg'
+                            ]
+                          }
+                        }
+                      }
+
+                      # Import Peer
+                      try:
+                        response = client.import_peer(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.import
@@ -2216,7 +2589,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -2246,6 +2619,44 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Edit Peer parameters
+                      opts = {
+                        'id': '{Component-ID}',
+                        'display_name': 'My Other Peer',
+                        'tags': [
+                          'fabric-peer',
+                          'ibm_saas',
+                          'red_team',
+                          'prod'
+                        ]
+                      }
+
+                      # Edit Peer
+                      try:
+                        response = client.edit_peer(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.update
@@ -2427,7 +2838,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -2451,6 +2862,35 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Send Peer Action
+                      try:
+                        response = client.peer_action(
+                          id='{Component-ID}',
+                          restart=True
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.configure
@@ -2568,7 +3008,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -2599,6 +3039,45 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Update peer parameters
+                      opts = {
+                        'id': '{Component-ID}',
+                        'resources': {
+                          'peer': {
+                            'requests': {
+                              'cpu': '400m',
+                              'memory': '1024Mi'
+                            }
+                          }
+                        }
+                      };
+
+                      # Update Peer
+                      try:
+                        response = client.peer_action(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.update
@@ -2812,7 +3291,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -2821,7 +3300,7 @@ paths:
                         url: 'https://{API-Endpoint}',
                       });
 
-                      // Create Orderer parameters
+                      // Create OS parameters
                       const opts = {
                         ordererType: 'raft',
                         mspId: 'orderermsp',
@@ -2845,6 +3324,47 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Create OS parameters
+                      opts = {
+                        'orderer_type': 'raft',
+                        'msp_id': 'orderermsp',
+                        'crypto': [
+                          cryptoDict-Node-1,  # see doc details to build this dictionary
+                          cryptoDict-Node-2, 
+                          cryptoDict-Node-3, 
+                          cryptoDict-Node-4, 
+                          cryptoDict-Node-5
+                        ],
+                        'cluster_name': 'My three Node Raft',
+                        'display_name': 'ordering service node'
+                      };
+
+                      # Create Orderer
+                      try:
+                        response = client.create_orderer(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.create
@@ -3067,7 +3587,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -3116,6 +3636,63 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Import Orderer parameters
+                      opts = {
+                        'display_name': 'orderer node',
+                        'cluster_id': 'abcde',
+                        'cluster_name': 'My Raft OS',
+                        'grpcwp_url': 'https://n3a3ec3-myorderer-proxy.ibp.us-south.containers.appdomain.cloud:443',
+                        'api_url': 'grpcs://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050',
+                        'operations_url': 'https://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:8443',
+                        'msp_id': 'OrdererOrg1',
+                        'system_channel_id': 'testchainid',
+                        'msp': {
+                          'component': {
+                            'tls_cert': 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tClRscyBjZXJ0IGRhdGEgd291bGQgYmUgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K',
+                            'ecert': 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCklkZW50aXR5IGRhdGEgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K',
+                            'admin_certs': [
+                              'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkFkbWluIGRhdGEgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K'
+                            ]
+                          },
+                          'tlsca': {
+                            'root_certs': [
+                              'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkRpZmZlcmVudCBkYXRhIGhlcmUgaWYgdGhpcyB3YXMgcmVhbAotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg'
+                            ]
+                          },
+                          'ca': {
+                            'root_certs': [
+                              'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkRpZmZlcmVudCBkYXRhIGhlcmUgaWYgdGhpcyB3YXMgcmVhbAotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg'
+                            ]
+                          }
+                        }
+                      };
+
+                      # Import Orderer
+                      try:
+                        response = client.import_orderer(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.import
@@ -3282,7 +3859,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -3308,6 +3885,40 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Edit Orderer parameters
+                      opts = {
+                        'id': '{Component-ID}',
+                        'cluster_name': 'My Other OS',
+                        'display_name': 'ordering node',
+                        'msp_id': 'orderermsp'
+                      }
+
+                      # Edit Orderer
+                      try:
+                        response = client.edit_orderer(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.update
@@ -3481,7 +4092,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -3505,6 +4116,35 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Send Orderer Action
+                      try:
+                        response = client.orderer_action(
+                          id='{Component-ID}',
+                          restart=True
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.configure
@@ -3622,7 +4262,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -3653,6 +4293,45 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Update Orderer parameters
+                      opts = {
+                        'id': '{Component-ID}',
+                        'resources': {
+                          'orderer': {
+                            'requests': {
+                              'cpu': '500m',
+                              'memory': '1024Mi'
+                            }
+                          }
+                        }
+                      }
+
+                      # Update Orderer
+                      try:
+                        response = client.update_orderer(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.update
@@ -3834,7 +4513,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -3858,6 +4537,35 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Submit Config Block to Orderer
+                      try:
+                        response = client.submit_block(
+                          id='{Component-ID}',
+                          b64_block='bWFzc2l2ZSBiaW5hcnkgb2YgYSBjb25maWcgYmxvY2sgd291bGQgYmUgaGVyZSBpZiB0aGlzIHdhcyByZWFsLCBwbGVhc2UgZG9udCBzZW5kIHRoaXM='
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.update
@@ -4049,7 +4757,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -4082,6 +4790,47 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Import MSP parameters
+                      opts = {
+                        'msp_id': 'org1',
+                        'display_name': 'My First Org',
+                        'root_certs': [
+                          'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo'
+                        ],
+                        'admins': [
+                          'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkFkbWluIGNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo='
+                        ],
+                        'tls_root_certs': [
+                          'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo'
+                        ]
+                      }
+
+                      # Import MSP
+                      try:
+                        response = client.import_msp(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.import
@@ -4204,7 +4953,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -4228,6 +4977,35 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Edit MSP
+                      try:
+                        response = client.edit_msp(
+                          id='{Component-ID}',
+                          display_name='My Other Org',
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.update
@@ -4350,7 +5128,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -4373,6 +5151,34 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Get MSP Certificate
+                      try:
+                        response = client.get_msp_certificate(
+                          msp_id='{Component-ID}',
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.read
@@ -4472,7 +5278,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -4490,6 +5296,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Get IBP Console Settings
+                      try:
+                        response = client.get_settings()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.ibp_console.read
@@ -4684,7 +5516,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -4720,6 +5552,50 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Edit IBP Console Settings parameters
+                      opts = {
+                        'max_req_per_min_ak': 50,
+                        'fabric_install_cc_timeout_ms': 350000,
+                        'file_logging': {
+                          'client': {
+                            'enabled': True,
+                            'level': 'debug',
+                            'unique_name': False
+                          },
+                          'server': {
+                            'enabled': True,
+                            'level': 'info',
+                            'unique_name': False
+                          }
+                        }
+                      }
+
+                      # Edit IBP Console Settings
+                      try:
+                        response = client.edit_settings(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.ibp_console.update
@@ -4879,7 +5755,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -4897,6 +5773,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Get supported Fabric versions
+                      try:
+                        response = client.get_fab_versions()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.ibp_console.read
@@ -5008,7 +5910,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -5026,6 +5928,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Get health stats on the IBP console
+                      try:
+                        response = client.get_health()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.ibp_console.read
@@ -5178,7 +6106,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -5196,6 +6124,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Get IBP console notifications
+                      try:
+                        response = client.list_notifications()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.notifications.read
@@ -5279,16 +6233,16 @@ paths:
                           endorsement_plugin: escc
                           init_required: true
                           validation_plugin: vscc
-                          validation_parameter: 'AND(''Org1.admin'', ''Org2.member'')'
+                          validation_parameter: "AND('Org1.admin', 'Org2.member')"
                           collections_obj:
                             - name: myCollection-v1
                               required_peer_count: 1
                               maximum_peer_count: 1
-                              member_orgs_policy: 'AND(''Org1.admin'', ''Org2.member'')'
+                              member_orgs_policy: "AND('Org1.admin', 'Org2.member')"
                               block_to_live: 10
                               member_only_read: false
                               member_only_write: false
-                              endorsement_policy: 'AND(''Org1.admin'', ''Org2.member'')'
+                              endorsement_policy: "AND('Org1.admin', 'Org2.member')"
                         channel: MyFirstChannel
                         current_policy:
                           number_of_signatures: 1
@@ -5452,16 +6406,16 @@ paths:
                       endorsement_plugin: escc
                       init_required: true
                       validation_plugin: vscc
-                      validation_parameter: 'AND(''Org1.admin'', ''Org2.member'')'
+                      validation_parameter: "AND('Org1.admin', 'Org2.member')"
                       collections_obj:
                         - name: myCollection-v1
                           required_peer_count: 1
                           maximum_peer_count: 1
-                          member_orgs_policy: 'AND(''Org1.admin'', ''Org2.member'')'
+                          member_orgs_policy: "AND('Org1.admin', 'Org2.member')"
                           block_to_live: 10
                           member_only_read: false
                           member_only_write: false
-                          endorsement_policy: 'AND(''Org1.admin'', ''Org2.member'')'
+                          endorsement_policy: "AND('Org1.admin', 'Org2.member')"
                     channel: MyFirstChannel
                     current_policy:
                       number_of_signatures: 1
@@ -5594,16 +6548,16 @@ paths:
                       endorsement_plugin: escc
                       init_required: true
                       validation_plugin: vscc
-                      validation_parameter: 'AND(''Org1.admin'', ''Org2.member'')'
+                      validation_parameter: "AND('Org1.admin', 'Org2.member')"
                       collections_obj:
                         - name: myCollection-v1
                           required_peer_count: 1
                           maximum_peer_count: 1
-                          member_orgs_policy: 'AND(''Org1.admin'', ''Org2.member'')'
+                          member_orgs_policy: "AND('Org1.admin', 'Org2.member')"
                           block_to_live: 10
                           member_only_read: false
                           member_only_write: false
-                          endorsement_policy: 'AND(''Org1.admin'', ''Org2.member'')'
+                          endorsement_policy: "AND('Org1.admin', 'Org2.member')"
                     channel: MyFirstChannel
                     current_policy:
                       number_of_signatures: 1
@@ -5715,7 +6669,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -5738,6 +6692,34 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Delete signature collection event
+                      try:
+                        response = client.delete_sig_tx(
+                          id='{Transaction-ID}',
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.signature_collections.delete
@@ -5838,7 +6820,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -5865,6 +6847,41 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Archive Notifications parameters
+                      opts = {
+                        'notificationIds': [
+                            'edf0c5e0b76d49ccadb8eee3eec88a48',
+                            'c9d00ebf849051e4f102008dc0be2488',
+                            'd7d831ddcd8d8c5bf87f4d972f675096'
+                        ]
+                      }
+
+                      # Archive Notifications
+                      try:
+                        response = client.archive_notifications(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.notifications.delete
@@ -5955,7 +6972,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -5973,6 +6990,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Get all components
+                      try:
+                        response = client.list_components()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.read
@@ -6092,7 +7135,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EmptyArrayResponse'
 
-  /ak/api/v3/components/types/{component-type}:
+  /ak/api/v3/components/types/{type}:
     get:
       tags:
         - Manage multiple components
@@ -6113,7 +7156,7 @@ paths:
                   lang: curl
                   source:
                     - |-
-                      curl -X GET "https://{API-Endpoint}/ak/api/v3/components/types/{Component-Type}" \
+                      curl -X GET "https://{API-Endpoint}/ak/api/v3/components/types/{Type}" \
                       -H "Content-Type: application/json" \
                       -H "Authorization: Bearer {Access-Token}"
           go:
@@ -6140,8 +7183,8 @@ paths:
                           return
                       }
 
-                      // Get data for components with this type "{Component-Type}"
-                      opts := service.NewGetComponentsByTypeOptions("{Component-Type}")
+                      // Get data for components with this type "{Type}"
+                      opts := service.NewGetComponentsByTypeOptions("{Type}")
                       result, detailedResponse, err := service.GetComponentsByType(opts)
                       fmt.Println("result:", result)
                       fmt.Println("response:", detailedResponse)
@@ -6154,7 +7197,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -6165,7 +7208,7 @@ paths:
 
                       // Get all components with type parameters
                       const opts = {
-                        componentType: '{Component-Type}'
+                        type: '{Type}'
                       };
 
                       // Get all components with type
@@ -6177,6 +7220,34 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Get all components with type
+                      try:
+                        response = client.get_components_by_type(
+                          type='{Type}'
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.read
@@ -6358,7 +7429,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -6381,6 +7452,34 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Get all components with tag
+                      try:
+                        response = client.get_components_by_tag(
+                          tag='{Tag}'
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.read
@@ -6560,7 +7659,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -6583,6 +7682,34 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Remove all components with tag
+                      try:
+                        response = client.remove_components_by_tag(
+                          tag='{Tag}'
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.remove
@@ -6675,7 +7802,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -6698,6 +7825,34 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Delete all components with tag
+                      try:
+                        response = client.delete_components_by_tag(
+                          tag='{Tag}'
+                        )
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.delete
@@ -6785,7 +7940,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -6803,6 +7958,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Delete all components
+                      try:
+                        response = client.delete_all_components()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.delete
@@ -6891,7 +8072,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -6909,6 +8090,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Restart the IBP Console
+                      try:
+                        response = client.restart()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.ibp_console.start
@@ -7074,7 +8281,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -7092,6 +8299,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Delete all IBP Console sessions
+                      try:
+                        response = client.delete_all_sessions()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.sessions.delete
@@ -7177,7 +8410,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -7195,6 +8428,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Delete all IBP Console notifications
+                      try:
+                        response = client.delete_all_notifications()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.notifications.delete
@@ -7279,7 +8538,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -7297,6 +8556,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Clear all IBP Console caches
+                      try:
+                        response = client.clear_caches()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.cache.delete
@@ -7413,7 +8698,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -7440,6 +8725,41 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Edit Admin certs on a component parameters
+                      opts = {
+                        'id': '{Component-ID}',
+                        'append_admin_certs': [
+                          'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo='
+                        ],
+                        'remove_admin_certs': []
+                      }
+
+                      # Edit Admin certs on a component
+                      try:
+                        response = client.edit_admin_certs(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.components.update
@@ -7561,7 +8881,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -7585,6 +8905,38 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Get a postman collection parameters
+                      opts = {
+                        'auth_type': 'api_key',
+                        'api_key': '{API-Key}'
+                      }
+
+                      # Get a postman collection using {Auth-Type}
+                      try:
+                        response = client.get_postman(**opts)
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.ibp_console.read
@@ -7667,7 +9019,7 @@ paths:
                     - |-
                       // Create an authenticator
                       const authenticator = new ibp.IamAuthenticator({
-                          apikey: '{API-Key}',
+                        apikey: '{API-Key}',
                       });
 
                       // Create client from the "BlockchainV3" class
@@ -7685,6 +9037,32 @@ paths:
                         console.error('error response:', e.body);
                         // handle error here
                       }
+          python:
+            - name: Example request
+              example:
+                - type: code
+                  lang: python
+                  source:
+                    - |-
+                      # Create an authenticator
+                      authenticator = IAMAuthenticator(
+                        apikey='{API-Key}'
+                      )
+
+                      # Create client from the "BlockchainV3" class
+                      client = BlockchainV3(
+                        authenticator=authenticator
+                      )
+                      client.set_service_url('https://{API-Endpoint}')
+
+                      # Get the swagger file for all apis
+                      try:
+                        response = client.get_swagger()
+                        print(f'response: {response.result}')
+                        # handle good response here 
+                      except ApiException as e:
+                        print(f'error response: {e.message}')
+                        # handle error here
       x-ibm-events:
         events:
           - name: blockchain.ibp_console.read
@@ -8773,7 +10151,6 @@ components:
         type: string
         description: A certificate as base 64 encoded PEM.
         x-validate_base64_certificate: true
-
 
     ImportMSPBody:
       type: object
@@ -10818,7 +12195,7 @@ components:
           type: array
           minLength: 1
           maxLength: 100 # dsh spam prevention limit
-          description: |
+          description: | # dsh todo update link and content at link for v3
             An array of config objects. When creating a new OS (Ordering Service) the array must have one object per desired raft node. 1 or 5 nodes are recommended.
 
             **When appending to an existing OS only an array of size 1 is supported.**
@@ -11041,7 +12418,7 @@ components:
             max_idle_time:
               type: number
               description: Maximum time in milliseconds for a browser client to be idle. Once exceeded the user is logged out. Defaults to `90000` ms (1.5 minutes). _Refresh browser after changes_
-              minimum: 60000  # 1 minute - a "large" minimum delay prevents immediate logout (which would be a lockout of sorts)
+              minimum: 60000 # 1 minute - a "large" minimum delay prevents immediate logout (which would be a lockout of sorts)
               maximum: 2678400000 # 1 month - dsh shrug
               example: 90000
         file_logging:
@@ -11061,43 +12438,43 @@ components:
         fabric_get_block_timeout_ms:
           type: number
           description: Maximum time in milliseconds to wait for a get-block transaction. Defaults to `10000` ms (10 seconds). _Refresh browser after changes_
-          minimum: 1000  # 1 second - a "large" minimum delay prevents immediate timeout
+          minimum: 1000 # 1 second - a "large" minimum delay prevents immediate timeout
           maximum: 36000000 # 10 hours - dsh shrug
           example: 10000
         fabric_instantiate_timeout_ms:
           type: number
           description: Maximum time in milliseconds to wait for a instantiate chaincode transaction. Defaults to `300000` ms (5 minutes). _Refresh browser after changes_
-          minimum: 1000  # 1 second - a "large" minimum delay prevents immediate timeout
+          minimum: 1000 # 1 second - a "large" minimum delay prevents immediate timeout
           maximum: 36000000 # 10 hours - dsh shrug
           example: 300000
         fabric_join_channel_timeout_ms:
           type: number
           description: Maximum time in milliseconds to wait for a join-channel transaction. Defaults to `25000` ms (25 seconds). _Refresh browser after changes_
-          minimum: 1000  # 1 second - a "large" minimum delay prevents immediate timeout
+          minimum: 1000 # 1 second - a "large" minimum delay prevents immediate timeout
           maximum: 36000000 # 10 hours - dsh shrug
           example: 25000
         fabric_install_cc_timeout_ms:
           type: number
           description: Maximum time in milliseconds to wait for a install chaincode transaction (Fabric v1.x). Defaults to `300000` ms (5 minutes). _Refresh browser after changes_
-          minimum: 1000  # 1 second - a "large" minimum delay prevents immediate timeout
+          minimum: 1000 # 1 second - a "large" minimum delay prevents immediate timeout
           maximum: 36000000 # 10 hours - dsh shrug
           example: 300000
         fabric_lc_install_cc_timeout_ms:
           type: number
           description: Maximum time in milliseconds to wait for a install chaincode transaction (Fabric v2.x). Defaults to `300000` ms (5 minutes). _Refresh browser after changes_
-          minimum: 1000  # 1 second - a "large" minimum delay prevents immediate timeout
+          minimum: 1000 # 1 second - a "large" minimum delay prevents immediate timeout
           maximum: 36000000 # 10 hours - dsh shrug
           example: 300000
         fabric_lc_get_cc_timeout_ms:
           type: number
           description: Maximum time in milliseconds to wait for a get-chaincode transaction (Fabric v2.x). Defaults to `180000` ms (3 minutes). _Refresh browser after changes_
-          minimum: 1000  # 1 second - a "large" minimum delay prevents immediate timeout
+          minimum: 1000 # 1 second - a "large" minimum delay prevents immediate timeout
           maximum: 36000000 # 10 hours - dsh shrug
           example: 180000
         fabric_general_timeout_ms:
           type: number
           description: Default maximum time in milliseconds to wait for a Fabric transaction. Defaults to `10000` ms (10 seconds). _Refresh browser after changes_
-          minimum: 1000  # 1 second - a "large" minimum delay prevents immediate timeout
+          minimum: 1000 # 1 second - a "large" minimum delay prevents immediate timeout
           maximum: 36000000 # 10 hours - dsh shrug
           example: 10000
 
@@ -12107,8 +13484,8 @@ components:
       description: Edit the `msp` crypto data of this component. Editing the `msp` field is only possible if this component was created using the `crypto.msp` field, else see the `crypto.enrollment` field.
       x-validate_no_extra_keys: true
       #x-validate_key_combination:
-        #  config.enrollment: # don't need this defined twice, the config.enrollment validation covers it
-        #    key_should_not_exist: true
+      #  config.enrollment: # don't need this defined twice, the config.enrollment validation covers it
+      #    key_should_not_exist: true
       properties:
         ca:
           type: object
@@ -13707,7 +15084,7 @@ components:
           items:
             type: string
             description: The name of an action that was received.
-            example: "restart"
+            example: restart
 
     #
     #
@@ -13888,9 +15265,9 @@ components:
         type: string
 
     PathType:
-      name: component-type
+      name: type
       in: path
-      description: The type to filter components on.
+      description: The type of component to filter components on.
       required: true
       schema:
         type: string

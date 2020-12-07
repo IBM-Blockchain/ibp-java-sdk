@@ -32,12 +32,12 @@ public class GetComponentsByTypeOptionsTest {
   @Test
   public void testGetComponentsByTypeOptions() throws Throwable {
     GetComponentsByTypeOptions getComponentsByTypeOptionsModel = new GetComponentsByTypeOptions.Builder()
-      .componentType("fabric-peer")
+      .type("fabric-peer")
       .deploymentAttrs("included")
       .parsedCerts("included")
       .cache("skip")
       .build();
-    assertEquals(getComponentsByTypeOptionsModel.componentType(), "fabric-peer");
+    assertEquals(getComponentsByTypeOptionsModel.type(), "fabric-peer");
     assertEquals(getComponentsByTypeOptionsModel.deploymentAttrs(), "included");
     assertEquals(getComponentsByTypeOptionsModel.parsedCerts(), "included");
     assertEquals(getComponentsByTypeOptionsModel.cache(), "skip");

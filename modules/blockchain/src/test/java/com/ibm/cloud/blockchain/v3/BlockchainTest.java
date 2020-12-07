@@ -3330,7 +3330,7 @@ public class BlockchainTest extends PowerMockTestCase {
 
     // Construct an instance of the GetComponentsByTypeOptions model
     GetComponentsByTypeOptions getComponentsByTypeOptionsModel = new GetComponentsByTypeOptions.Builder()
-    .componentType("fabric-peer")
+    .type("fabric-peer")
     .deploymentAttrs("included")
     .parsedCerts("included")
     .cache("skip")
