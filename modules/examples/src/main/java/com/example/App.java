@@ -17,7 +17,7 @@ import java.util.List;
 import com.ibm.cloud.blockchain.v3.Blockchain;
 import com.ibm.cloud.blockchain.v3.model.GenericComponentResponse;
 import com.ibm.cloud.blockchain.v3.model.GetComponentsByTypeOptions;
-import com.ibm.cloud.blockchain.v3.model.GetComponentsByTypeOptions.ComponentType;
+import com.ibm.cloud.blockchain.v3.model.GetComponentsByTypeOptions.Type;
 import com.ibm.cloud.blockchain.v3.model.GetMultiComponentsResponse;
 import com.ibm.cloud.sdk.core.http.Response;
 import com.ibm.cloud.sdk.core.http.ServiceCall;
@@ -33,13 +33,13 @@ public class App {
         System.out.println("Application to Test Admin Access to IBP");
 
         // Create an IAM authenticator.
-        IamAuthenticator authenticator = new IamAuthenticator(System.getenv("API_KEY"));
+        IamAuthenticator authenticator = new IamAuthenticator(System.getenv("IAM_API_KEY"));
 
         Blockchain bc = new Blockchain("myIbp", authenticator);
-        bc.setServiceUrl(System.getenv("SERVICE_URL"));
+        bc.setServiceUrl(System.getenv("IBP_SERVICE_INSTANCE_URL"));
 
         // get all the peer components
-        GetComponentsByTypeOptions options = new GetComponentsByTypeOptions.Builder().componentType(ComponentType.FABRIC_PEER).build();
+        GetComponentsByTypeOptions options = new GetComponentsByTypeOptions.Builder().type(Type.FABRIC_PEER).build();
         ServiceCall<GetMultiComponentsResponse> call = bc.getComponentsByType(options);
         Response<GetMultiComponentsResponse> response = call.execute();
         List<GenericComponentResponse> l = response.getResult().getComponents();

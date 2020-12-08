@@ -1,3 +1,5 @@
 {
-    "java.checkstyle.configuration": "${workspaceFolder}/checkstyle.xml"
+    "java.checkstyle.configuration": "${workspaceFolder}/checkstyle.xml",
+    "java.sources.organizeImports.staticStarThreshold": 999,
+    "java.sources.organizeImports.starThreshold": 999
 }

@@ -13,14 +13,17 @@
 
 package com.ibm.cloud.blockchain.v3.model;
 
-import com.ibm.cloud.blockchain.v3.model.ActionReenroll;
-import com.ibm.cloud.blockchain.v3.utils.TestUtilities;
-import com.ibm.cloud.sdk.core.service.model.FileWithMetadata;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
+
+import com.ibm.cloud.blockchain.v3.utils.TestUtilities;
+import com.ibm.cloud.sdk.core.service.model.FileWithMetadata;
+
 import org.testng.annotations.Test;
-import static org.testng.Assert.*;
 
 /**
  * Unit test class for the ActionReenroll model.

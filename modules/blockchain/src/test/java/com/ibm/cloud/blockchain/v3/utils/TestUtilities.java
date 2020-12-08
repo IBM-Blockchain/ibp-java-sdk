@@ -25,12 +25,19 @@ import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.HttpUrl;
 import com.ibm.cloud.sdk.core.util.DateUtils;
 import com.ibm.cloud.sdk.core.util.GsonSingleton;
+
+
 import com.ibm.cloud.sdk.core.service.model.FileWithMetadata;
 
 /**
  *  A class used by the unit tests containing utility functions.
  */
 public class TestUtilities {
+
+    private TestUtilities() {
+
+    }
+
     public static Map<String, Object> createMockMap() {
         Map<String, Object> mockMap = new HashMap<>();
         mockMap.put("foo", "bar");
