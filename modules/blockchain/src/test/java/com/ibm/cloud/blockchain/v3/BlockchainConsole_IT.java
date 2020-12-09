@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.ibm.cloud.blockchain.test.SdkIntegrationTestBase;
@@ -29,8 +30,10 @@ import com.ibm.cloud.blockchain.v3.model.GetFabricVersionsResponse;
 import com.ibm.cloud.blockchain.v3.model.GetNotificationsResponse;
 import com.ibm.cloud.blockchain.v3.model.GetPostmanOptions;
 import com.ibm.cloud.blockchain.v3.model.GetPublicSettingsResponse;
+import com.ibm.cloud.blockchain.v3.model.NotificationData;
 import com.ibm.cloud.sdk.core.http.Response;
 import com.ibm.cloud.sdk.core.http.ServiceCall;
+import com.ibm.cloud.sdk.core.service.exception.ServiceResponseException;
 import com.ibm.cloud.sdk.core.util.CredentialUtils;
 
 import org.testng.annotations.BeforeClass;
@@ -102,18 +105,37 @@ public class BlockchainConsole_IT extends SdkIntegrationTestBase {
         Response<GetNotificationsResponse> response = call.execute();
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(200);
+
+        GetNotificationsResponse result =  response.getResult();
+        assertThat(result).isNotNull();
+        assertThat(result.getReturning()).isNotNegative();
+        assertThat(result.getTotal()).isNotNegative();
+        List<NotificationData> notifications = result.getNotifications();
+        int size = notifications.size();
+        if (size>0){
+            notificationId = notifications.get(0).getId();
+            assertThat(notificationId).isNotNull().isNotBlank();
+        }
     }
 
-    @Test()
-    public void archiveNotifications() {
+    String notificationId;
 
-        ArchiveNotificationsOptions archiveNotificationsOptions = new ArchiveNotificationsOptions.Builder()
-                .notificationIds(Arrays.asList(new String[] {})).build();
+    @Test(dependsOnMethods = "getNotifications")
+    public void archiveNotifications() throws Exception {
 
-        ServiceCall<ArchiveResponse> call = service.archiveNotifications(archiveNotificationsOptions);
-        Response<ArchiveResponse> response = call.execute();
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(200);
+        try {
+            ArchiveNotificationsOptions archiveNotificationsOptions = new ArchiveNotificationsOptions.Builder()
+                    .notificationIds(Arrays.asList(new String[] {notificationId})).build();
+
+            ServiceCall<ArchiveResponse> call = service.archiveNotifications(archiveNotificationsOptions);
+            Response<ArchiveResponse> response = call.execute();
+            assertThat(response).isNotNull();
+            assertThat(response.getStatusCode()).isEqualTo(200);
+        } catch (ServiceResponseException e) {
+            Exception wrappedError = new Exception(e.getDebuggingInfo().toString());
+            wrappedError.initCause(e);
+            throw wrappedError;
+        }
 
     }
 
@@ -141,7 +163,6 @@ public class BlockchainConsole_IT extends SdkIntegrationTestBase {
         assertThat(response.getStatusCode()).isEqualTo(200);
     }
 
-
     @Test()
     public void swagger() {
         ServiceCall<String> call = service.getSwagger();
@@ -152,7 +173,8 @@ public class BlockchainConsole_IT extends SdkIntegrationTestBase {
 
     @Test
     public void postman() {
-        GetPostmanOptions getPostmanOptions = new GetPostmanOptions.Builder().authType(GetPostmanOptions.AuthType.API_KEY).apiKey("dummyKeyHere").build();
+        GetPostmanOptions getPostmanOptions = new GetPostmanOptions.Builder()
+                .authType(GetPostmanOptions.AuthType.API_KEY).apiKey("dummyKeyHere").build();
         ServiceCall<Void> call = service.getPostman(getPostmanOptions);
         Response<Void> response = call.execute();
         assertThat(response).isNotNull();
