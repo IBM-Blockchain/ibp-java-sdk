@@ -19,6 +19,8 @@
     <packaging>pom</packaging>
 
     <properties>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--
             This is the version associated with the Java core. The version used here should be compatible with the version
             of the SDK generator used to generate your SDK code.
@@ -48,7 +50,7 @@
         <powermock-version>2.0.5</powermock-version>
         <mockito-version>3.2.4</mockito-version>
         <slf4j-version>1.7.28</slf4j-version>
-
+        
         <!-- Deployment-related properties -->
         <bintray.org>ibm-cloud-sdks</bintray.org>
         <!-- >>> Replace this with the name of your project's bintray repository -->
@@ -284,6 +286,7 @@
                     <version>${maven-failsafe-plugin-version}</version>
                     <executions>
                         <execution>
+                            <phase>test</phase>
                             <goals>
                                 <goal>integration-test</goal>
                                 <goal>verify</goal>

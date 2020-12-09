@@ -12,7 +12,18 @@
  */
 package com.ibm.cloud.blockchain.v3;
 
-import com.ibm.cloud.blockchain.v3.Blockchain;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.testng.Assert.assertEquals;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.ibm.cloud.blockchain.v3.model.ActionEnroll;
 import com.ibm.cloud.blockchain.v3.model.ActionReenroll;
 import com.ibm.cloud.blockchain.v3.model.ActionRenew;
@@ -24,9 +35,6 @@ import com.ibm.cloud.blockchain.v3.model.BccspPKCS11;
 import com.ibm.cloud.blockchain.v3.model.BccspSW;
 import com.ibm.cloud.blockchain.v3.model.CaActionOptions;
 import com.ibm.cloud.blockchain.v3.model.CaResponse;
-import com.ibm.cloud.blockchain.v3.model.CaResponseResources;
-import com.ibm.cloud.blockchain.v3.model.CaResponseStorage;
-import com.ibm.cloud.blockchain.v3.model.CacheData;
 import com.ibm.cloud.blockchain.v3.model.CacheFlushResponse;
 import com.ibm.cloud.blockchain.v3.model.ClearCachesOptions;
 import com.ibm.cloud.blockchain.v3.model.ClientAuth;
@@ -95,8 +103,6 @@ import com.ibm.cloud.blockchain.v3.model.ConfigPeerLimits;
 import com.ibm.cloud.blockchain.v3.model.ConfigPeerLimitsConcurrency;
 import com.ibm.cloud.blockchain.v3.model.ConfigPeerUpdate;
 import com.ibm.cloud.blockchain.v3.model.ConfigPeerUpdatePeer;
-import com.ibm.cloud.blockchain.v3.model.CpuHealthStats;
-import com.ibm.cloud.blockchain.v3.model.CpuHealthStatsTimes;
 import com.ibm.cloud.blockchain.v3.model.CreateCaBodyConfigOverride;
 import com.ibm.cloud.blockchain.v3.model.CreateCaBodyResources;
 import com.ibm.cloud.blockchain.v3.model.CreateCaBodyStorage;
@@ -125,7 +131,6 @@ import com.ibm.cloud.blockchain.v3.model.DeleteSigTxOptions;
 import com.ibm.cloud.blockchain.v3.model.DeleteSignatureCollectionResponse;
 import com.ibm.cloud.blockchain.v3.model.EditAdminCertsOptions;
 import com.ibm.cloud.blockchain.v3.model.EditAdminCertsResponse;
-import com.ibm.cloud.blockchain.v3.model.EditAdminCertsResponseSetAdminCertsItem;
 import com.ibm.cloud.blockchain.v3.model.EditCaOptions;
 import com.ibm.cloud.blockchain.v3.model.EditLogSettingsBody;
 import com.ibm.cloud.blockchain.v3.model.EditMspOptions;
@@ -133,28 +138,13 @@ import com.ibm.cloud.blockchain.v3.model.EditOrdererOptions;
 import com.ibm.cloud.blockchain.v3.model.EditPeerOptions;
 import com.ibm.cloud.blockchain.v3.model.EditSettingsBodyInactivityTimeouts;
 import com.ibm.cloud.blockchain.v3.model.EditSettingsOptions;
-import com.ibm.cloud.blockchain.v3.model.FabVersionObject;
-import com.ibm.cloud.blockchain.v3.model.FabricVersionDictionary;
 import com.ibm.cloud.blockchain.v3.model.GenericComponentResponse;
-import com.ibm.cloud.blockchain.v3.model.GenericComponentResponseMsp;
-import com.ibm.cloud.blockchain.v3.model.GenericComponentResponseMspCa;
-import com.ibm.cloud.blockchain.v3.model.GenericComponentResponseMspComponent;
-import com.ibm.cloud.blockchain.v3.model.GenericComponentResponseMspTlsca;
-import com.ibm.cloud.blockchain.v3.model.GenericComponentResponseResources;
-import com.ibm.cloud.blockchain.v3.model.GenericComponentResponseStorage;
-import com.ibm.cloud.blockchain.v3.model.GenericResourceLimits;
-import com.ibm.cloud.blockchain.v3.model.GenericResources;
-import com.ibm.cloud.blockchain.v3.model.GenericResourcesRequests;
 import com.ibm.cloud.blockchain.v3.model.GetAthenaHealthStatsResponse;
-import com.ibm.cloud.blockchain.v3.model.GetAthenaHealthStatsResponseOPTOOLS;
-import com.ibm.cloud.blockchain.v3.model.GetAthenaHealthStatsResponseOPTOOLSMemoryUsage;
-import com.ibm.cloud.blockchain.v3.model.GetAthenaHealthStatsResponseOS;
 import com.ibm.cloud.blockchain.v3.model.GetComponentOptions;
 import com.ibm.cloud.blockchain.v3.model.GetComponentsByTagOptions;
 import com.ibm.cloud.blockchain.v3.model.GetComponentsByTypeOptions;
 import com.ibm.cloud.blockchain.v3.model.GetFabVersionsOptions;
 import com.ibm.cloud.blockchain.v3.model.GetFabricVersionsResponse;
-import com.ibm.cloud.blockchain.v3.model.GetFabricVersionsResponseVersions;
 import com.ibm.cloud.blockchain.v3.model.GetHealthOptions;
 import com.ibm.cloud.blockchain.v3.model.GetMSPCertificateResponse;
 import com.ibm.cloud.blockchain.v3.model.GetMspCertificateOptions;
@@ -162,12 +152,6 @@ import com.ibm.cloud.blockchain.v3.model.GetMultiComponentsResponse;
 import com.ibm.cloud.blockchain.v3.model.GetNotificationsResponse;
 import com.ibm.cloud.blockchain.v3.model.GetPostmanOptions;
 import com.ibm.cloud.blockchain.v3.model.GetPublicSettingsResponse;
-import com.ibm.cloud.blockchain.v3.model.GetPublicSettingsResponseCLUSTERDATA;
-import com.ibm.cloud.blockchain.v3.model.GetPublicSettingsResponseCRN;
-import com.ibm.cloud.blockchain.v3.model.GetPublicSettingsResponseFABRICCAPABILITIES;
-import com.ibm.cloud.blockchain.v3.model.GetPublicSettingsResponseFILELOGGING;
-import com.ibm.cloud.blockchain.v3.model.GetPublicSettingsResponseINACTIVITYTIMEOUTS;
-import com.ibm.cloud.blockchain.v3.model.GetPublicSettingsResponseVERSIONS;
 import com.ibm.cloud.blockchain.v3.model.GetSettingsOptions;
 import com.ibm.cloud.blockchain.v3.model.GetSwaggerOptions;
 import com.ibm.cloud.blockchain.v3.model.Hsm;
@@ -182,7 +166,6 @@ import com.ibm.cloud.blockchain.v3.model.ImportOrdererOptions;
 import com.ibm.cloud.blockchain.v3.model.ImportPeerOptions;
 import com.ibm.cloud.blockchain.v3.model.ListComponentsOptions;
 import com.ibm.cloud.blockchain.v3.model.ListNotificationsOptions;
-import com.ibm.cloud.blockchain.v3.model.LogSettingsResponse;
 import com.ibm.cloud.blockchain.v3.model.LoggingSettingsClient;
 import com.ibm.cloud.blockchain.v3.model.LoggingSettingsServer;
 import com.ibm.cloud.blockchain.v3.model.Metrics;
@@ -193,20 +176,13 @@ import com.ibm.cloud.blockchain.v3.model.MspCryptoField;
 import com.ibm.cloud.blockchain.v3.model.MspCryptoFieldCa;
 import com.ibm.cloud.blockchain.v3.model.MspCryptoFieldComponent;
 import com.ibm.cloud.blockchain.v3.model.MspCryptoFieldTlsca;
-import com.ibm.cloud.blockchain.v3.model.MspPublicData;
 import com.ibm.cloud.blockchain.v3.model.MspResponse;
 import com.ibm.cloud.blockchain.v3.model.NodeOu;
-import com.ibm.cloud.blockchain.v3.model.NodeOuGeneral;
-import com.ibm.cloud.blockchain.v3.model.NotificationData;
 import com.ibm.cloud.blockchain.v3.model.OrdererActionOptions;
 import com.ibm.cloud.blockchain.v3.model.OrdererResponse;
-import com.ibm.cloud.blockchain.v3.model.OrdererResponseResources;
-import com.ibm.cloud.blockchain.v3.model.OrdererResponseStorage;
 import com.ibm.cloud.blockchain.v3.model.PeerActionOptions;
 import com.ibm.cloud.blockchain.v3.model.PeerResources;
 import com.ibm.cloud.blockchain.v3.model.PeerResponse;
-import com.ibm.cloud.blockchain.v3.model.PeerResponseResources;
-import com.ibm.cloud.blockchain.v3.model.PeerResponseStorage;
 import com.ibm.cloud.blockchain.v3.model.RemoveComponentOptions;
 import com.ibm.cloud.blockchain.v3.model.RemoveComponentsByTagOptions;
 import com.ibm.cloud.blockchain.v3.model.RemoveMultiComponentsResponse;
@@ -218,7 +194,6 @@ import com.ibm.cloud.blockchain.v3.model.ResourceObjectFabV2;
 import com.ibm.cloud.blockchain.v3.model.ResourceRequests;
 import com.ibm.cloud.blockchain.v3.model.RestartAthenaResponse;
 import com.ibm.cloud.blockchain.v3.model.RestartOptions;
-import com.ibm.cloud.blockchain.v3.model.SettingsTimestampData;
 import com.ibm.cloud.blockchain.v3.model.StorageObject;
 import com.ibm.cloud.blockchain.v3.model.SubmitBlockOptions;
 import com.ibm.cloud.blockchain.v3.model.UpdateCaBodyConfigOverride;
@@ -236,22 +211,13 @@ import com.ibm.cloud.blockchain.v3.model.UpdateOrdererBodyResources;
 import com.ibm.cloud.blockchain.v3.model.UpdateOrdererOptions;
 import com.ibm.cloud.blockchain.v3.model.UpdatePeerBodyCrypto;
 import com.ibm.cloud.blockchain.v3.model.UpdatePeerOptions;
-import com.ibm.cloud.blockchain.v3.utils.TestUtilities;
+
 import com.ibm.cloud.sdk.core.http.Response;
-import com.ibm.cloud.sdk.core.security.Authenticator;
-import com.ibm.cloud.sdk.core.security.NoAuthAuthenticator;
 import com.ibm.cloud.sdk.core.service.model.FileWithMetadata;
 import com.ibm.cloud.sdk.core.util.EnvironmentUtils;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
+
+import com.ibm.cloud.blockchain.v3.utils.TestUtilities;
+
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -259,13 +225,16 @@ import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import static org.testng.Assert.*;
+
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 
 /**
  * Unit test class for the Blockchain service.
  */
 @PrepareForTest({ EnvironmentUtils.class })
-@PowerMockIgnore({"javax.net.ssl.*", "org.mockito.*"})
+@PowerMockIgnore({ "javax.net.ssl.*", "org.mockito.*" })
 public class BlockchainTest extends PowerMockTestCase {
 
   final HashMap<String, InputStream> mockStreamMap = TestUtilities.createMockStreamMap();
@@ -274,7 +243,8 @@ public class BlockchainTest extends PowerMockTestCase {
   protected MockWebServer server;
   protected Blockchain blockchainService;
 
-  // Creates a mock set of environment variables that are returned by EnvironmentUtils.getenv().
+  // Creates a mock set of environment variables that are returned by
+  // EnvironmentUtils.getenv().
   private Map<String, String> getTestProcessEnvironment() {
     Map<String, String> env = new HashMap<>();
     env.put("TESTSERVICE_AUTH_TYPE", "noAuth");
@@ -292,8 +262,8 @@ public class BlockchainTest extends PowerMockTestCase {
   }
 
   /**
-  * Negative Test - construct the service with a null authenticator.
-  */
+   * Negative Test - construct the service with a null authenticator.
+   */
   @Test(expectedExceptions = IllegalArgumentException.class)
   public void testConstructorWithNullAuthenticator() throws Throwable {
     final String serviceName = "testService";
@@ -307,21 +277,14 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"myca-2\", \"type\": \"fabric-ca\", \"display_name\": \"Example CA\", \"grpcwp_url\": \"https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"operations_url\": \"https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443\", \"msp\": {\"ca\": {\"name\": \"org1CA\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"org1tlsCA\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"location\": \"ibmcloud\", \"node_ou\": {\"enabled\": true}, \"resources\": {\"ca\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"peer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"orderer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"statedb\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"state_db\": \"couchdb\", \"storage\": {\"ca\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"peer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"orderer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"statedb\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"timestamp\": 1537262855753, \"tags\": [\"fabric-ca\"], \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String getComponentPath = "/ak/api/v3/components/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the GetComponentOptions model
-    GetComponentOptions getComponentOptionsModel = new GetComponentOptions.Builder()
-    .id("testString")
-    .deploymentAttrs("included")
-    .parsedCerts("included")
-    .cache("skip")
-    .caAttrs("included")
-    .build();
+    GetComponentOptions getComponentOptionsModel = new GetComponentOptions.Builder().id("testString")
+        .deploymentAttrs("included").parsedCerts("included").cache("skip").caAttrs("included").build();
 
     // Invoke operation with valid options model (positive test)
     Response<GenericComponentResponse> response = blockchainService.getComponent(getComponentOptionsModel).execute();
@@ -365,20 +328,17 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"deleted\", \"type\": \"fabric-peer\", \"id\": \"component-1\", \"display_name\": \"My Peer\"}";
     String removeComponentPath = "/ak/api/v3/components/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the RemoveComponentOptions model
-    RemoveComponentOptions removeComponentOptionsModel = new RemoveComponentOptions.Builder()
-    .id("testString")
-    .build();
+    RemoveComponentOptions removeComponentOptionsModel = new RemoveComponentOptions.Builder().id("testString").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<DeleteComponentResponse> response = blockchainService.removeComponent(removeComponentOptionsModel).execute();
+    Response<DeleteComponentResponse> response = blockchainService.removeComponent(removeComponentOptionsModel)
+        .execute();
     assertNotNull(response);
     DeleteComponentResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -415,20 +375,17 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"deleted\", \"type\": \"fabric-peer\", \"id\": \"component-1\", \"display_name\": \"My Peer\"}";
     String deleteComponentPath = "/ak/api/v3/kubernetes/components/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the DeleteComponentOptions model
-    DeleteComponentOptions deleteComponentOptionsModel = new DeleteComponentOptions.Builder()
-    .id("testString")
-    .build();
+    DeleteComponentOptions deleteComponentOptionsModel = new DeleteComponentOptions.Builder().id("testString").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<DeleteComponentResponse> response = blockchainService.deleteComponent(deleteComponentOptionsModel).execute();
+    Response<DeleteComponentResponse> response = blockchainService.deleteComponent(deleteComponentOptionsModel)
+        .execute();
     assertNotNull(response);
     DeleteComponentResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -465,329 +422,197 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"display_name\": \"My CA\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"operations_url\": \"https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"location\": \"ibmcloud\", \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"resources\": {\"ca\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"storage\": {\"ca\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String createCaPath = "/ak/api/v3/kubernetes/components/fabric-ca";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ConfigCACors model
-    ConfigCACors configCaCorsModel = new ConfigCACors.Builder()
-    .enabled(true)
-    .origins(new java.util.ArrayList<String>(java.util.Arrays.asList("*")))
-    .build();
+    ConfigCACors configCaCorsModel = new ConfigCACors.Builder().enabled(true)
+        .origins(new java.util.ArrayList<String>(java.util.Arrays.asList("*"))).build();
 
     // Construct an instance of the ConfigCATlsClientauth model
-    ConfigCATlsClientauth configCaTlsClientauthModel = new ConfigCATlsClientauth.Builder()
-    .type("noclientcert")
-    .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+    ConfigCATlsClientauth configCaTlsClientauthModel = new ConfigCATlsClientauth.Builder().type("noclientcert")
+        .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the ConfigCATls model
-    ConfigCATls configCaTlsModel = new ConfigCATls.Builder()
-    .keyfile("testString")
-    .certfile("testString")
-    .clientauth(configCaTlsClientauthModel)
-    .build();
+    ConfigCATls configCaTlsModel = new ConfigCATls.Builder().keyfile("testString").certfile("testString")
+        .clientauth(configCaTlsClientauthModel).build();
 
     // Construct an instance of the ConfigCACa model
-    ConfigCACa configCaCaModel = new ConfigCACa.Builder()
-    .keyfile("testString")
-    .certfile("testString")
-    .chainfile("testString")
-    .build();
+    ConfigCACa configCaCaModel = new ConfigCACa.Builder().keyfile("testString").certfile("testString")
+        .chainfile("testString").build();
 
     // Construct an instance of the ConfigCACrl model
-    ConfigCACrl configCaCrlModel = new ConfigCACrl.Builder()
-    .expiry("24h")
-    .build();
+    ConfigCACrl configCaCrlModel = new ConfigCACrl.Builder().expiry("24h").build();
 
     // Construct an instance of the IdentityAttrs model
-    IdentityAttrs identityAttrsModel = new IdentityAttrs.Builder()
-    .hfRegistrarRoles("*")
-    .hfRegistrarDelegateRoles("*")
-    .hfRevoker(true)
-    .hfIntermediateCa(true)
-    .hfGenCrl(true)
-    .hfRegistrarAttributes("*")
-    .hfAffiliationMgr(true)
-    .build();
+    IdentityAttrs identityAttrsModel = new IdentityAttrs.Builder().hfRegistrarRoles("*").hfRegistrarDelegateRoles("*")
+        .hfRevoker(true).hfIntermediateCa(true).hfGenCrl(true).hfRegistrarAttributes("*").hfAffiliationMgr(true)
+        .build();
 
     // Construct an instance of the ConfigCARegistryIdentitiesItem model
     ConfigCARegistryIdentitiesItem configCaRegistryIdentitiesItemModel = new ConfigCARegistryIdentitiesItem.Builder()
-    .name("admin")
-    .pass("password")
-    .type("client")
-    .maxenrollments(Double.valueOf("-1"))
-    .affiliation("testString")
-    .attrs(identityAttrsModel)
-    .build();
+        .name("admin").pass("password").type("client").maxenrollments(Double.valueOf("-1")).affiliation("testString")
+        .attrs(identityAttrsModel).build();
 
     // Construct an instance of the ConfigCARegistry model
-    ConfigCARegistry configCaRegistryModel = new ConfigCARegistry.Builder()
-    .maxenrollments(Double.valueOf("-1"))
-    .identities(new java.util.ArrayList<ConfigCARegistryIdentitiesItem>(java.util.Arrays.asList(configCaRegistryIdentitiesItemModel)))
-    .build();
+    ConfigCARegistry configCaRegistryModel = new ConfigCARegistry.Builder().maxenrollments(Double.valueOf("-1"))
+        .identities(new java.util.ArrayList<ConfigCARegistryIdentitiesItem>(
+            java.util.Arrays.asList(configCaRegistryIdentitiesItemModel)))
+        .build();
 
     // Construct an instance of the ConfigCADbTlsClient model
-    ConfigCADbTlsClient configCaDbTlsClientModel = new ConfigCADbTlsClient.Builder()
-    .certfile("testString")
-    .keyfile("testString")
-    .build();
+    ConfigCADbTlsClient configCaDbTlsClientModel = new ConfigCADbTlsClient.Builder().certfile("testString")
+        .keyfile("testString").build();
 
     // Construct an instance of the ConfigCADbTls model
     ConfigCADbTls configCaDbTlsModel = new ConfigCADbTls.Builder()
-    .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .client(configCaDbTlsClientModel)
-    .enabled(false)
-    .build();
+        .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
+        .client(configCaDbTlsClientModel).enabled(false).build();
 
     // Construct an instance of the ConfigCADb model
-    ConfigCADb configCaDbModel = new ConfigCADb.Builder()
-    .type("postgres")
-    .datasource("host=fake.databases.appdomain.cloud port=31941 user=ibm_cloud password=password dbname=ibmclouddb sslmode=verify-full")
-    .tls(configCaDbTlsModel)
-    .build();
+    ConfigCADb configCaDbModel = new ConfigCADb.Builder().type("postgres").datasource(
+        "host=fake.databases.appdomain.cloud port=31941 user=ibm_cloud password=password dbname=ibmclouddb sslmode=verify-full")
+        .tls(configCaDbTlsModel).build();
 
     // Construct an instance of the ConfigCAAffiliations model
     ConfigCAAffiliations configCaAffiliationsModel = new ConfigCAAffiliations.Builder()
-    .org1(new java.util.ArrayList<String>(java.util.Arrays.asList("department1")))
-    .org2(new java.util.ArrayList<String>(java.util.Arrays.asList("department1")))
-    .add("foo", "testString")
-    .build();
+        .org1(new java.util.ArrayList<String>(java.util.Arrays.asList("department1")))
+        .org2(new java.util.ArrayList<String>(java.util.Arrays.asList("department1"))).add("foo", "testString").build();
 
     // Construct an instance of the ConfigCACsrKeyrequest model
-    ConfigCACsrKeyrequest configCaCsrKeyrequestModel = new ConfigCACsrKeyrequest.Builder()
-    .algo("ecdsa")
-    .size(Double.valueOf("256"))
-    .build();
+    ConfigCACsrKeyrequest configCaCsrKeyrequestModel = new ConfigCACsrKeyrequest.Builder().algo("ecdsa")
+        .size(Double.valueOf("256")).build();
 
     // Construct an instance of the ConfigCACsrNamesItem model
-    ConfigCACsrNamesItem configCaCsrNamesItemModel = new ConfigCACsrNamesItem.Builder()
-    .c("US")
-    .st("North Carolina")
-    .l("Raleigh")
-    .o("Hyperledger")
-    .ou("Fabric")
-    .build();
+    ConfigCACsrNamesItem configCaCsrNamesItemModel = new ConfigCACsrNamesItem.Builder().c("US").st("North Carolina")
+        .l("Raleigh").o("Hyperledger").ou("Fabric").build();
 
     // Construct an instance of the ConfigCACsrCa model
-    ConfigCACsrCa configCaCsrCaModel = new ConfigCACsrCa.Builder()
-    .expiry("131400h")
-    .pathlength(Double.valueOf("0"))
-    .build();
+    ConfigCACsrCa configCaCsrCaModel = new ConfigCACsrCa.Builder().expiry("131400h").pathlength(Double.valueOf("0"))
+        .build();
 
     // Construct an instance of the ConfigCACsr model
-    ConfigCACsr configCaCsrModel = new ConfigCACsr.Builder()
-    .cn("ca")
-    .keyrequest(configCaCsrKeyrequestModel)
-    .names(new java.util.ArrayList<ConfigCACsrNamesItem>(java.util.Arrays.asList(configCaCsrNamesItemModel)))
-    .hosts(new java.util.ArrayList<String>(java.util.Arrays.asList("localhost")))
-    .ca(configCaCsrCaModel)
-    .build();
+    ConfigCACsr configCaCsrModel = new ConfigCACsr.Builder().cn("ca").keyrequest(configCaCsrKeyrequestModel)
+        .names(new java.util.ArrayList<ConfigCACsrNamesItem>(java.util.Arrays.asList(configCaCsrNamesItemModel)))
+        .hosts(new java.util.ArrayList<String>(java.util.Arrays.asList("localhost"))).ca(configCaCsrCaModel).build();
 
     // Construct an instance of the ConfigCAIdemix model
-    ConfigCAIdemix configCaIdemixModel = new ConfigCAIdemix.Builder()
-    .rhpoolsize(Double.valueOf("100"))
-    .nonceexpiration("15s")
-    .noncesweepinterval("15m")
-    .build();
+    ConfigCAIdemix configCaIdemixModel = new ConfigCAIdemix.Builder().rhpoolsize(Double.valueOf("100"))
+        .nonceexpiration("15s").noncesweepinterval("15m").build();
 
     // Construct an instance of the BccspSW model
-    BccspSW bccspSwModel = new BccspSW.Builder()
-    .hash("SHA2")
-    .security(Double.valueOf("256"))
-    .build();
+    BccspSW bccspSwModel = new BccspSW.Builder().hash("SHA2").security(Double.valueOf("256")).build();
 
     // Construct an instance of the BccspPKCS11 model
-    BccspPKCS11 bccspPkcS11Model = new BccspPKCS11.Builder()
-    .label("testString")
-    .pin("testString")
-    .hash("SHA2")
-    .security(Double.valueOf("256"))
-    .build();
+    BccspPKCS11 bccspPkcS11Model = new BccspPKCS11.Builder().label("testString").pin("testString").hash("SHA2")
+        .security(Double.valueOf("256")).build();
 
     // Construct an instance of the Bccsp model
-    Bccsp bccspModel = new Bccsp.Builder()
-    .xDefault("SW")
-    .sw(bccspSwModel)
-    .pkcS11(bccspPkcS11Model)
-    .build();
+    Bccsp bccspModel = new Bccsp.Builder().xDefault("SW").sw(bccspSwModel).pkcS11(bccspPkcS11Model).build();
 
     // Construct an instance of the ConfigCAIntermediateParentserver model
     ConfigCAIntermediateParentserver configCaIntermediateParentserverModel = new ConfigCAIntermediateParentserver.Builder()
-    .url("testString")
-    .caname("testString")
-    .build();
+        .url("testString").caname("testString").build();
 
     // Construct an instance of the ConfigCAIntermediateEnrollment model
     ConfigCAIntermediateEnrollment configCaIntermediateEnrollmentModel = new ConfigCAIntermediateEnrollment.Builder()
-    .hosts("localhost")
-    .profile("testString")
-    .label("testString")
-    .build();
+        .hosts("localhost").profile("testString").label("testString").build();
 
     // Construct an instance of the ConfigCAIntermediateTlsClient model
     ConfigCAIntermediateTlsClient configCaIntermediateTlsClientModel = new ConfigCAIntermediateTlsClient.Builder()
-    .certfile("testString")
-    .keyfile("testString")
-    .build();
+        .certfile("testString").keyfile("testString").build();
 
     // Construct an instance of the ConfigCAIntermediateTls model
     ConfigCAIntermediateTls configCaIntermediateTlsModel = new ConfigCAIntermediateTls.Builder()
-    .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .client(configCaIntermediateTlsClientModel)
-    .build();
+        .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
+        .client(configCaIntermediateTlsClientModel).build();
 
     // Construct an instance of the ConfigCAIntermediate model
     ConfigCAIntermediate configCaIntermediateModel = new ConfigCAIntermediate.Builder()
-    .parentserver(configCaIntermediateParentserverModel)
-    .enrollment(configCaIntermediateEnrollmentModel)
-    .tls(configCaIntermediateTlsModel)
-    .build();
+        .parentserver(configCaIntermediateParentserverModel).enrollment(configCaIntermediateEnrollmentModel)
+        .tls(configCaIntermediateTlsModel).build();
 
     // Construct an instance of the ConfigCACfgIdentities model
     ConfigCACfgIdentities configCaCfgIdentitiesModel = new ConfigCACfgIdentities.Builder()
-    .passwordattempts(Double.valueOf("10"))
-    .allowremove(false)
-    .build();
+        .passwordattempts(Double.valueOf("10")).allowremove(false).build();
 
     // Construct an instance of the ConfigCACfg model
-    ConfigCACfg configCaCfgModel = new ConfigCACfg.Builder()
-    .identities(configCaCfgIdentitiesModel)
-    .build();
+    ConfigCACfg configCaCfgModel = new ConfigCACfg.Builder().identities(configCaCfgIdentitiesModel).build();
 
     // Construct an instance of the MetricsStatsd model
-    MetricsStatsd metricsStatsdModel = new MetricsStatsd.Builder()
-    .network("udp")
-    .address("127.0.0.1:8125")
-    .writeInterval("10s")
-    .prefix("server")
-    .build();
+    MetricsStatsd metricsStatsdModel = new MetricsStatsd.Builder().network("udp").address("127.0.0.1:8125")
+        .writeInterval("10s").prefix("server").build();
 
     // Construct an instance of the Metrics model
-    Metrics metricsModel = new Metrics.Builder()
-    .provider("prometheus")
-    .statsd(metricsStatsdModel)
-    .build();
+    Metrics metricsModel = new Metrics.Builder().provider("prometheus").statsd(metricsStatsdModel).build();
 
     // Construct an instance of the ConfigCASigningDefault model
     ConfigCASigningDefault configCaSigningDefaultModel = new ConfigCASigningDefault.Builder()
-    .usage(new java.util.ArrayList<String>(java.util.Arrays.asList("cert sign")))
-    .expiry("8760h")
-    .build();
+        .usage(new java.util.ArrayList<String>(java.util.Arrays.asList("cert sign"))).expiry("8760h").build();
 
     // Construct an instance of the ConfigCASigningProfilesCaCaconstraint model
     ConfigCASigningProfilesCaCaconstraint configCaSigningProfilesCaCaconstraintModel = new ConfigCASigningProfilesCaCaconstraint.Builder()
-    .isca(true)
-    .maxpathlen(Double.valueOf("0"))
-    .maxpathlenzero(true)
-    .build();
+        .isca(true).maxpathlen(Double.valueOf("0")).maxpathlenzero(true).build();
 
     // Construct an instance of the ConfigCASigningProfilesCa model
     ConfigCASigningProfilesCa configCaSigningProfilesCaModel = new ConfigCASigningProfilesCa.Builder()
-    .usage(new java.util.ArrayList<String>(java.util.Arrays.asList("cert sign")))
-    .expiry("43800h")
-    .caconstraint(configCaSigningProfilesCaCaconstraintModel)
-    .build();
+        .usage(new java.util.ArrayList<String>(java.util.Arrays.asList("cert sign"))).expiry("43800h")
+        .caconstraint(configCaSigningProfilesCaCaconstraintModel).build();
 
     // Construct an instance of the ConfigCASigningProfilesTls model
     ConfigCASigningProfilesTls configCaSigningProfilesTlsModel = new ConfigCASigningProfilesTls.Builder()
-    .usage(new java.util.ArrayList<String>(java.util.Arrays.asList("cert sign")))
-    .expiry("43800h")
-    .build();
+        .usage(new java.util.ArrayList<String>(java.util.Arrays.asList("cert sign"))).expiry("43800h").build();
 
     // Construct an instance of the ConfigCASigningProfiles model
     ConfigCASigningProfiles configCaSigningProfilesModel = new ConfigCASigningProfiles.Builder()
-    .ca(configCaSigningProfilesCaModel)
-    .tls(configCaSigningProfilesTlsModel)
-    .build();
+        .ca(configCaSigningProfilesCaModel).tls(configCaSigningProfilesTlsModel).build();
 
     // Construct an instance of the ConfigCASigning model
-    ConfigCASigning configCaSigningModel = new ConfigCASigning.Builder()
-    .xDefault(configCaSigningDefaultModel)
-    .profiles(configCaSigningProfilesModel)
-    .build();
+    ConfigCASigning configCaSigningModel = new ConfigCASigning.Builder().xDefault(configCaSigningDefaultModel)
+        .profiles(configCaSigningProfilesModel).build();
 
     // Construct an instance of the ConfigCACreate model
-    ConfigCACreate configCaCreateModel = new ConfigCACreate.Builder()
-    .cors(configCaCorsModel)
-    .debug(false)
-    .crlsizelimit(Double.valueOf("512000"))
-    .tls(configCaTlsModel)
-    .ca(configCaCaModel)
-    .crl(configCaCrlModel)
-    .registry(configCaRegistryModel)
-    .db(configCaDbModel)
-    .affiliations(configCaAffiliationsModel)
-    .csr(configCaCsrModel)
-    .idemix(configCaIdemixModel)
-    .bccsp(bccspModel)
-    .intermediate(configCaIntermediateModel)
-    .cfg(configCaCfgModel)
-    .metrics(metricsModel)
-    .signing(configCaSigningModel)
-    .build();
+    ConfigCACreate configCaCreateModel = new ConfigCACreate.Builder().cors(configCaCorsModel).debug(false)
+        .crlsizelimit(Double.valueOf("512000")).tls(configCaTlsModel).ca(configCaCaModel).crl(configCaCrlModel)
+        .registry(configCaRegistryModel).db(configCaDbModel).affiliations(configCaAffiliationsModel)
+        .csr(configCaCsrModel).idemix(configCaIdemixModel).bccsp(bccspModel).intermediate(configCaIntermediateModel)
+        .cfg(configCaCfgModel).metrics(metricsModel).signing(configCaSigningModel).build();
 
     // Construct an instance of the CreateCaBodyConfigOverride model
     CreateCaBodyConfigOverride createCaBodyConfigOverrideModel = new CreateCaBodyConfigOverride.Builder()
-    .ca(configCaCreateModel)
-    .tlsca(configCaCreateModel)
-    .build();
+        .ca(configCaCreateModel).tlsca(configCaCreateModel).build();
 
     // Construct an instance of the ResourceRequests model
-    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceLimits model
-    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceObject model
-    ResourceObject resourceObjectModel = new ResourceObject.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+    ResourceObject resourceObjectModel = new ResourceObject.Builder().requests(resourceRequestsModel)
+        .limits(resourceLimitsModel).build();
 
     // Construct an instance of the CreateCaBodyResources model
-    CreateCaBodyResources createCaBodyResourcesModel = new CreateCaBodyResources.Builder()
-    .ca(resourceObjectModel)
-    .build();
+    CreateCaBodyResources createCaBodyResourcesModel = new CreateCaBodyResources.Builder().ca(resourceObjectModel)
+        .build();
 
     // Construct an instance of the StorageObject model
-    StorageObject storageObjectModel = new StorageObject.Builder()
-    .size("4GiB")
-    .xClass("default")
-    .build();
+    StorageObject storageObjectModel = new StorageObject.Builder().size("4GiB").xClass("default").build();
 
     // Construct an instance of the CreateCaBodyStorage model
-    CreateCaBodyStorage createCaBodyStorageModel = new CreateCaBodyStorage.Builder()
-    .ca(storageObjectModel)
-    .build();
+    CreateCaBodyStorage createCaBodyStorageModel = new CreateCaBodyStorage.Builder().ca(storageObjectModel).build();
 
     // Construct an instance of the Hsm model
-    Hsm hsmModel = new Hsm.Builder()
-    .pkcs11endpoint("tcp://example.com:666")
-    .build();
+    Hsm hsmModel = new Hsm.Builder().pkcs11endpoint("tcp://example.com:666").build();
 
     // Construct an instance of the CreateCaOptions model
-    CreateCaOptions createCaOptionsModel = new CreateCaOptions.Builder()
-    .displayName("My CA")
-    .configOverride(createCaBodyConfigOverrideModel)
-    .resources(createCaBodyResourcesModel)
-    .storage(createCaBodyStorageModel)
-    .zone("-")
-    .replicas(Double.valueOf("1"))
-    .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
-    .hsm(hsmModel)
-    .region("-")
-    .version("1.4.6-1")
-    .build();
+    CreateCaOptions createCaOptionsModel = new CreateCaOptions.Builder().displayName("My CA")
+        .configOverride(createCaBodyConfigOverrideModel).resources(createCaBodyResourcesModel)
+        .storage(createCaBodyStorageModel).zone("-").replicas(Double.valueOf("1"))
+        .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca"))).hsm(hsmModel).region("-")
+        .version("1.4.6-1").build();
 
     // Invoke operation with valid options model (positive test)
     Response<CaResponse> response = blockchainService.createCa(createCaOptionsModel).execute();
@@ -827,47 +652,40 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"display_name\": \"My CA\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"operations_url\": \"https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"location\": \"ibmcloud\", \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"resources\": {\"ca\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"storage\": {\"ca\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String importCaPath = "/ak/api/v3/components/fabric-ca";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ImportCaBodyMspCa model
-    ImportCaBodyMspCa importCaBodyMspCaModel = new ImportCaBodyMspCa.Builder()
-    .name("org1CA")
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    ImportCaBodyMspCa importCaBodyMspCaModel = new ImportCaBodyMspCa.Builder().name("org1CA")
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the ImportCaBodyMspTlsca model
-    ImportCaBodyMspTlsca importCaBodyMspTlscaModel = new ImportCaBodyMspTlsca.Builder()
-    .name("org1tlsCA")
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    ImportCaBodyMspTlsca importCaBodyMspTlscaModel = new ImportCaBodyMspTlsca.Builder().name("org1tlsCA")
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the ImportCaBodyMspComponent model
-    ImportCaBodyMspComponent importCaBodyMspComponentModel = new ImportCaBodyMspComponent.Builder()
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .build();
+    ImportCaBodyMspComponent importCaBodyMspComponentModel = new ImportCaBodyMspComponent.Builder().tlsCert(
+        "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .build();
 
     // Construct an instance of the ImportCaBodyMsp model
-    ImportCaBodyMsp importCaBodyMspModel = new ImportCaBodyMsp.Builder()
-    .ca(importCaBodyMspCaModel)
-    .tlsca(importCaBodyMspTlscaModel)
-    .component(importCaBodyMspComponentModel)
-    .build();
+    ImportCaBodyMsp importCaBodyMspModel = new ImportCaBodyMsp.Builder().ca(importCaBodyMspCaModel)
+        .tlsca(importCaBodyMspTlscaModel).component(importCaBodyMspComponentModel).build();
 
     // Construct an instance of the ImportCaOptions model
-    ImportCaOptions importCaOptionsModel = new ImportCaOptions.Builder()
-    .displayName("Sample CA")
-    .apiUrl("https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:7054")
-    .msp(importCaBodyMspModel)
-    .location("ibmcloud")
-    .operationsUrl("https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443")
-    .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .build();
+    ImportCaOptions importCaOptionsModel = new ImportCaOptions.Builder().displayName("Sample CA")
+        .apiUrl("https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:7054").msp(importCaBodyMspModel)
+        .location("ibmcloud").operationsUrl("https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443")
+        .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .build();
 
     // Invoke operation with valid options model (positive test)
     Response<CaResponse> response = blockchainService.importCa(importCaOptionsModel).execute();
@@ -907,269 +725,161 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"display_name\": \"My CA\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"operations_url\": \"https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"location\": \"ibmcloud\", \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"resources\": {\"ca\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"storage\": {\"ca\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String updateCaPath = "/ak/api/v3/kubernetes/components/fabric-ca/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ConfigCACors model
-    ConfigCACors configCaCorsModel = new ConfigCACors.Builder()
-    .enabled(true)
-    .origins(new java.util.ArrayList<String>(java.util.Arrays.asList("*")))
-    .build();
+    ConfigCACors configCaCorsModel = new ConfigCACors.Builder().enabled(true)
+        .origins(new java.util.ArrayList<String>(java.util.Arrays.asList("*"))).build();
 
     // Construct an instance of the ConfigCATlsClientauth model
-    ConfigCATlsClientauth configCaTlsClientauthModel = new ConfigCATlsClientauth.Builder()
-    .type("noclientcert")
-    .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+    ConfigCATlsClientauth configCaTlsClientauthModel = new ConfigCATlsClientauth.Builder().type("noclientcert")
+        .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the ConfigCATls model
-    ConfigCATls configCaTlsModel = new ConfigCATls.Builder()
-    .keyfile("testString")
-    .certfile("testString")
-    .clientauth(configCaTlsClientauthModel)
-    .build();
+    ConfigCATls configCaTlsModel = new ConfigCATls.Builder().keyfile("testString").certfile("testString")
+        .clientauth(configCaTlsClientauthModel).build();
 
     // Construct an instance of the ConfigCACa model
-    ConfigCACa configCaCaModel = new ConfigCACa.Builder()
-    .keyfile("testString")
-    .certfile("testString")
-    .chainfile("testString")
-    .build();
+    ConfigCACa configCaCaModel = new ConfigCACa.Builder().keyfile("testString").certfile("testString")
+        .chainfile("testString").build();
 
     // Construct an instance of the ConfigCACrl model
-    ConfigCACrl configCaCrlModel = new ConfigCACrl.Builder()
-    .expiry("24h")
-    .build();
+    ConfigCACrl configCaCrlModel = new ConfigCACrl.Builder().expiry("24h").build();
 
     // Construct an instance of the IdentityAttrs model
-    IdentityAttrs identityAttrsModel = new IdentityAttrs.Builder()
-    .hfRegistrarRoles("*")
-    .hfRegistrarDelegateRoles("*")
-    .hfRevoker(true)
-    .hfIntermediateCa(true)
-    .hfGenCrl(true)
-    .hfRegistrarAttributes("*")
-    .hfAffiliationMgr(true)
-    .build();
+    IdentityAttrs identityAttrsModel = new IdentityAttrs.Builder().hfRegistrarRoles("*").hfRegistrarDelegateRoles("*")
+        .hfRevoker(true).hfIntermediateCa(true).hfGenCrl(true).hfRegistrarAttributes("*").hfAffiliationMgr(true)
+        .build();
 
     // Construct an instance of the ConfigCARegistryIdentitiesItem model
     ConfigCARegistryIdentitiesItem configCaRegistryIdentitiesItemModel = new ConfigCARegistryIdentitiesItem.Builder()
-    .name("admin")
-    .pass("password")
-    .type("client")
-    .maxenrollments(Double.valueOf("-1"))
-    .affiliation("testString")
-    .attrs(identityAttrsModel)
-    .build();
+        .name("admin").pass("password").type("client").maxenrollments(Double.valueOf("-1")).affiliation("testString")
+        .attrs(identityAttrsModel).build();
 
     // Construct an instance of the ConfigCARegistry model
-    ConfigCARegistry configCaRegistryModel = new ConfigCARegistry.Builder()
-    .maxenrollments(Double.valueOf("-1"))
-    .identities(new java.util.ArrayList<ConfigCARegistryIdentitiesItem>(java.util.Arrays.asList(configCaRegistryIdentitiesItemModel)))
-    .build();
+    ConfigCARegistry configCaRegistryModel = new ConfigCARegistry.Builder().maxenrollments(Double.valueOf("-1"))
+        .identities(new java.util.ArrayList<ConfigCARegistryIdentitiesItem>(
+            java.util.Arrays.asList(configCaRegistryIdentitiesItemModel)))
+        .build();
 
     // Construct an instance of the ConfigCADbTlsClient model
-    ConfigCADbTlsClient configCaDbTlsClientModel = new ConfigCADbTlsClient.Builder()
-    .certfile("testString")
-    .keyfile("testString")
-    .build();
+    ConfigCADbTlsClient configCaDbTlsClientModel = new ConfigCADbTlsClient.Builder().certfile("testString")
+        .keyfile("testString").build();
 
     // Construct an instance of the ConfigCADbTls model
     ConfigCADbTls configCaDbTlsModel = new ConfigCADbTls.Builder()
-    .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .client(configCaDbTlsClientModel)
-    .enabled(false)
-    .build();
+        .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
+        .client(configCaDbTlsClientModel).enabled(false).build();
 
     // Construct an instance of the ConfigCADb model
-    ConfigCADb configCaDbModel = new ConfigCADb.Builder()
-    .type("postgres")
-    .datasource("host=fake.databases.appdomain.cloud port=31941 user=ibm_cloud password=password dbname=ibmclouddb sslmode=verify-full")
-    .tls(configCaDbTlsModel)
-    .build();
+    ConfigCADb configCaDbModel = new ConfigCADb.Builder().type("postgres").datasource(
+        "host=fake.databases.appdomain.cloud port=31941 user=ibm_cloud password=password dbname=ibmclouddb sslmode=verify-full")
+        .tls(configCaDbTlsModel).build();
 
     // Construct an instance of the ConfigCAAffiliations model
     ConfigCAAffiliations configCaAffiliationsModel = new ConfigCAAffiliations.Builder()
-    .org1(new java.util.ArrayList<String>(java.util.Arrays.asList("department1")))
-    .org2(new java.util.ArrayList<String>(java.util.Arrays.asList("department1")))
-    .add("foo", "testString")
-    .build();
+        .org1(new java.util.ArrayList<String>(java.util.Arrays.asList("department1")))
+        .org2(new java.util.ArrayList<String>(java.util.Arrays.asList("department1"))).add("foo", "testString").build();
 
     // Construct an instance of the ConfigCACsrKeyrequest model
-    ConfigCACsrKeyrequest configCaCsrKeyrequestModel = new ConfigCACsrKeyrequest.Builder()
-    .algo("ecdsa")
-    .size(Double.valueOf("256"))
-    .build();
+    ConfigCACsrKeyrequest configCaCsrKeyrequestModel = new ConfigCACsrKeyrequest.Builder().algo("ecdsa")
+        .size(Double.valueOf("256")).build();
 
     // Construct an instance of the ConfigCACsrNamesItem model
-    ConfigCACsrNamesItem configCaCsrNamesItemModel = new ConfigCACsrNamesItem.Builder()
-    .c("US")
-    .st("North Carolina")
-    .l("Raleigh")
-    .o("Hyperledger")
-    .ou("Fabric")
-    .build();
+    ConfigCACsrNamesItem configCaCsrNamesItemModel = new ConfigCACsrNamesItem.Builder().c("US").st("North Carolina")
+        .l("Raleigh").o("Hyperledger").ou("Fabric").build();
 
     // Construct an instance of the ConfigCACsrCa model
-    ConfigCACsrCa configCaCsrCaModel = new ConfigCACsrCa.Builder()
-    .expiry("131400h")
-    .pathlength(Double.valueOf("0"))
-    .build();
+    ConfigCACsrCa configCaCsrCaModel = new ConfigCACsrCa.Builder().expiry("131400h").pathlength(Double.valueOf("0"))
+        .build();
 
     // Construct an instance of the ConfigCACsr model
-    ConfigCACsr configCaCsrModel = new ConfigCACsr.Builder()
-    .cn("ca")
-    .keyrequest(configCaCsrKeyrequestModel)
-    .names(new java.util.ArrayList<ConfigCACsrNamesItem>(java.util.Arrays.asList(configCaCsrNamesItemModel)))
-    .hosts(new java.util.ArrayList<String>(java.util.Arrays.asList("localhost")))
-    .ca(configCaCsrCaModel)
-    .build();
+    ConfigCACsr configCaCsrModel = new ConfigCACsr.Builder().cn("ca").keyrequest(configCaCsrKeyrequestModel)
+        .names(new java.util.ArrayList<ConfigCACsrNamesItem>(java.util.Arrays.asList(configCaCsrNamesItemModel)))
+        .hosts(new java.util.ArrayList<String>(java.util.Arrays.asList("localhost"))).ca(configCaCsrCaModel).build();
 
     // Construct an instance of the ConfigCAIdemix model
-    ConfigCAIdemix configCaIdemixModel = new ConfigCAIdemix.Builder()
-    .rhpoolsize(Double.valueOf("100"))
-    .nonceexpiration("15s")
-    .noncesweepinterval("15m")
-    .build();
+    ConfigCAIdemix configCaIdemixModel = new ConfigCAIdemix.Builder().rhpoolsize(Double.valueOf("100"))
+        .nonceexpiration("15s").noncesweepinterval("15m").build();
 
     // Construct an instance of the BccspSW model
-    BccspSW bccspSwModel = new BccspSW.Builder()
-    .hash("SHA2")
-    .security(Double.valueOf("256"))
-    .build();
+    BccspSW bccspSwModel = new BccspSW.Builder().hash("SHA2").security(Double.valueOf("256")).build();
 
     // Construct an instance of the BccspPKCS11 model
-    BccspPKCS11 bccspPkcS11Model = new BccspPKCS11.Builder()
-    .label("testString")
-    .pin("testString")
-    .hash("SHA2")
-    .security(Double.valueOf("256"))
-    .build();
+    BccspPKCS11 bccspPkcS11Model = new BccspPKCS11.Builder().label("testString").pin("testString").hash("SHA2")
+        .security(Double.valueOf("256")).build();
 
     // Construct an instance of the Bccsp model
-    Bccsp bccspModel = new Bccsp.Builder()
-    .xDefault("SW")
-    .sw(bccspSwModel)
-    .pkcS11(bccspPkcS11Model)
-    .build();
+    Bccsp bccspModel = new Bccsp.Builder().xDefault("SW").sw(bccspSwModel).pkcS11(bccspPkcS11Model).build();
 
     // Construct an instance of the ConfigCAIntermediateParentserver model
     ConfigCAIntermediateParentserver configCaIntermediateParentserverModel = new ConfigCAIntermediateParentserver.Builder()
-    .url("testString")
-    .caname("testString")
-    .build();
+        .url("testString").caname("testString").build();
 
     // Construct an instance of the ConfigCAIntermediateEnrollment model
     ConfigCAIntermediateEnrollment configCaIntermediateEnrollmentModel = new ConfigCAIntermediateEnrollment.Builder()
-    .hosts("localhost")
-    .profile("testString")
-    .label("testString")
-    .build();
+        .hosts("localhost").profile("testString").label("testString").build();
 
     // Construct an instance of the ConfigCAIntermediateTlsClient model
     ConfigCAIntermediateTlsClient configCaIntermediateTlsClientModel = new ConfigCAIntermediateTlsClient.Builder()
-    .certfile("testString")
-    .keyfile("testString")
-    .build();
+        .certfile("testString").keyfile("testString").build();
 
     // Construct an instance of the ConfigCAIntermediateTls model
     ConfigCAIntermediateTls configCaIntermediateTlsModel = new ConfigCAIntermediateTls.Builder()
-    .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .client(configCaIntermediateTlsClientModel)
-    .build();
+        .certfiles(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
+        .client(configCaIntermediateTlsClientModel).build();
 
     // Construct an instance of the ConfigCAIntermediate model
     ConfigCAIntermediate configCaIntermediateModel = new ConfigCAIntermediate.Builder()
-    .parentserver(configCaIntermediateParentserverModel)
-    .enrollment(configCaIntermediateEnrollmentModel)
-    .tls(configCaIntermediateTlsModel)
-    .build();
+        .parentserver(configCaIntermediateParentserverModel).enrollment(configCaIntermediateEnrollmentModel)
+        .tls(configCaIntermediateTlsModel).build();
 
     // Construct an instance of the ConfigCACfgIdentities model
     ConfigCACfgIdentities configCaCfgIdentitiesModel = new ConfigCACfgIdentities.Builder()
-    .passwordattempts(Double.valueOf("10"))
-    .allowremove(false)
-    .build();
+        .passwordattempts(Double.valueOf("10")).allowremove(false).build();
 
     // Construct an instance of the ConfigCACfg model
-    ConfigCACfg configCaCfgModel = new ConfigCACfg.Builder()
-    .identities(configCaCfgIdentitiesModel)
-    .build();
+    ConfigCACfg configCaCfgModel = new ConfigCACfg.Builder().identities(configCaCfgIdentitiesModel).build();
 
     // Construct an instance of the MetricsStatsd model
-    MetricsStatsd metricsStatsdModel = new MetricsStatsd.Builder()
-    .network("udp")
-    .address("127.0.0.1:8125")
-    .writeInterval("10s")
-    .prefix("server")
-    .build();
+    MetricsStatsd metricsStatsdModel = new MetricsStatsd.Builder().network("udp").address("127.0.0.1:8125")
+        .writeInterval("10s").prefix("server").build();
 
     // Construct an instance of the Metrics model
-    Metrics metricsModel = new Metrics.Builder()
-    .provider("prometheus")
-    .statsd(metricsStatsdModel)
-    .build();
+    Metrics metricsModel = new Metrics.Builder().provider("prometheus").statsd(metricsStatsdModel).build();
 
     // Construct an instance of the ConfigCAUpdate model
-    ConfigCAUpdate configCaUpdateModel = new ConfigCAUpdate.Builder()
-    .cors(configCaCorsModel)
-    .debug(false)
-    .crlsizelimit(Double.valueOf("512000"))
-    .tls(configCaTlsModel)
-    .ca(configCaCaModel)
-    .crl(configCaCrlModel)
-    .registry(configCaRegistryModel)
-    .db(configCaDbModel)
-    .affiliations(configCaAffiliationsModel)
-    .csr(configCaCsrModel)
-    .idemix(configCaIdemixModel)
-    .bccsp(bccspModel)
-    .intermediate(configCaIntermediateModel)
-    .cfg(configCaCfgModel)
-    .metrics(metricsModel)
-    .build();
+    ConfigCAUpdate configCaUpdateModel = new ConfigCAUpdate.Builder().cors(configCaCorsModel).debug(false)
+        .crlsizelimit(Double.valueOf("512000")).tls(configCaTlsModel).ca(configCaCaModel).crl(configCaCrlModel)
+        .registry(configCaRegistryModel).db(configCaDbModel).affiliations(configCaAffiliationsModel)
+        .csr(configCaCsrModel).idemix(configCaIdemixModel).bccsp(bccspModel).intermediate(configCaIntermediateModel)
+        .cfg(configCaCfgModel).metrics(metricsModel).build();
 
     // Construct an instance of the UpdateCaBodyConfigOverride model
     UpdateCaBodyConfigOverride updateCaBodyConfigOverrideModel = new UpdateCaBodyConfigOverride.Builder()
-    .ca(configCaUpdateModel)
-    .build();
+        .ca(configCaUpdateModel).build();
 
     // Construct an instance of the ResourceRequests model
-    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceLimits model
-    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceObject model
-    ResourceObject resourceObjectModel = new ResourceObject.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+    ResourceObject resourceObjectModel = new ResourceObject.Builder().requests(resourceRequestsModel)
+        .limits(resourceLimitsModel).build();
 
     // Construct an instance of the UpdateCaBodyResources model
-    UpdateCaBodyResources updateCaBodyResourcesModel = new UpdateCaBodyResources.Builder()
-    .ca(resourceObjectModel)
-    .build();
+    UpdateCaBodyResources updateCaBodyResourcesModel = new UpdateCaBodyResources.Builder().ca(resourceObjectModel)
+        .build();
 
     // Construct an instance of the UpdateCaOptions model
-    UpdateCaOptions updateCaOptionsModel = new UpdateCaOptions.Builder()
-    .id("testString")
-    .configOverride(updateCaBodyConfigOverrideModel)
-    .replicas(Double.valueOf("1"))
-    .resources(updateCaBodyResourcesModel)
-    .version("1.4.6-1")
-    .zone("-")
-    .build();
+    UpdateCaOptions updateCaOptionsModel = new UpdateCaOptions.Builder().id("testString")
+        .configOverride(updateCaBodyConfigOverrideModel).replicas(Double.valueOf("1"))
+        .resources(updateCaBodyResourcesModel).version("1.4.6-1").zone("-").build();
 
     // Invoke operation with valid options model (positive test)
     Response<CaResponse> response = blockchainService.updateCa(updateCaOptionsModel).execute();
@@ -1209,23 +919,16 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"display_name\": \"My CA\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"operations_url\": \"https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"location\": \"ibmcloud\", \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"resources\": {\"ca\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"storage\": {\"ca\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String editCaPath = "/ak/api/v3/components/fabric-ca/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the EditCaOptions model
-    EditCaOptions editCaOptionsModel = new EditCaOptions.Builder()
-    .id("testString")
-    .displayName("My CA")
-    .apiUrl("https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:7054")
-    .operationsUrl("https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443")
-    .caName("ca")
-    .location("ibmcloud")
-    .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
-    .build();
+    EditCaOptions editCaOptionsModel = new EditCaOptions.Builder().id("testString").displayName("My CA")
+        .apiUrl("https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:7054")
+        .operationsUrl("https://n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud:9443").caName("ca")
+        .location("ibmcloud").tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca"))).build();
 
     // Invoke operation with valid options model (positive test)
     Response<CaResponse> response = blockchainService.editCa(editCaOptionsModel).execute();
@@ -1265,24 +968,17 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"accepted\", \"id\": \"myca\", \"actions\": [\"restart\"]}";
     String caActionPath = "/ak/api/v3/kubernetes/components/fabric-ca/testString/actions";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(202)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(202)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ActionRenew model
-    ActionRenew actionRenewModel = new ActionRenew.Builder()
-    .tlsCert(true)
-    .build();
+    ActionRenew actionRenewModel = new ActionRenew.Builder().tlsCert(true).build();
 
     // Construct an instance of the CaActionOptions model
-    CaActionOptions caActionOptionsModel = new CaActionOptions.Builder()
-    .id("testString")
-    .restart(true)
-    .renew(actionRenewModel)
-    .build();
+    CaActionOptions caActionOptionsModel = new CaActionOptions.Builder().id("testString").restart(true)
+        .renew(actionRenewModel).build();
 
     // Invoke operation with valid options model (positive test)
     Response<ActionsResponse> response = blockchainService.caAction(caActionOptionsModel).execute();
@@ -1322,394 +1018,247 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"display_name\": \"My Peer\", \"grpcwp_url\": \"https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084\", \"location\": \"ibmcloud\", \"operations_url\": \"https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"node_ou\": {\"enabled\": true}, \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"resources\": {\"peer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"statedb\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"state_db\": \"couchdb\", \"storage\": {\"peer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"statedb\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"type\": \"fabric-peer\", \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String createPeerPath = "/ak/api/v3/kubernetes/components/fabric-peer";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the CryptoEnrollmentComponent model
     CryptoEnrollmentComponent cryptoEnrollmentComponentModel = new CryptoEnrollmentComponent.Builder()
-    .admincerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+        .admincerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the CryptoObjectEnrollmentCa model
     CryptoObjectEnrollmentCa cryptoObjectEnrollmentCaModel = new CryptoObjectEnrollmentCa.Builder()
-    .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud")
-    .port(Double.valueOf("7054"))
-    .name("ca")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .enrollId("admin")
-    .enrollSecret("password")
-    .build();
+        .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud").port(Double.valueOf("7054")).name("ca")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .enrollId("admin").enrollSecret("password").build();
 
     // Construct an instance of the CryptoObjectEnrollmentTlsca model
     CryptoObjectEnrollmentTlsca cryptoObjectEnrollmentTlscaModel = new CryptoObjectEnrollmentTlsca.Builder()
-    .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud")
-    .port(Double.valueOf("7054"))
-    .name("tlsca")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .enrollId("admin")
-    .enrollSecret("password")
-    .csrHosts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+        .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud").port(Double.valueOf("7054")).name("tlsca")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .enrollId("admin").enrollSecret("password")
+        .csrHosts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the CryptoObjectEnrollment model
     CryptoObjectEnrollment cryptoObjectEnrollmentModel = new CryptoObjectEnrollment.Builder()
-    .component(cryptoEnrollmentComponentModel)
-    .ca(cryptoObjectEnrollmentCaModel)
-    .tlsca(cryptoObjectEnrollmentTlscaModel)
-    .build();
+        .component(cryptoEnrollmentComponentModel).ca(cryptoObjectEnrollmentCaModel)
+        .tlsca(cryptoObjectEnrollmentTlscaModel).build();
 
     // Construct an instance of the ClientAuth model
-    ClientAuth clientAuthModel = new ClientAuth.Builder()
-    .type("noclientcert")
-    .tlsCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+    ClientAuth clientAuthModel = new ClientAuth.Builder().type("noclientcert")
+        .tlsCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the MspCryptoComp model
-    MspCryptoComp mspCryptoCompModel = new MspCryptoComp.Builder()
-    .ekey("testString")
-    .ecert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .tlsKey("testString")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .clientAuth(clientAuthModel)
-    .build();
+    MspCryptoComp mspCryptoCompModel = new MspCryptoComp.Builder().ekey("testString").ecert(
+        "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .tlsKey("testString")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .clientAuth(clientAuthModel).build();
 
     // Construct an instance of the MspCryptoCa model
     MspCryptoCa mspCryptoCaModel = new MspCryptoCa.Builder()
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the CryptoObjectMsp model
-    CryptoObjectMsp cryptoObjectMspModel = new CryptoObjectMsp.Builder()
-    .component(mspCryptoCompModel)
-    .ca(mspCryptoCaModel)
-    .tlsca(mspCryptoCaModel)
-    .build();
+    CryptoObjectMsp cryptoObjectMspModel = new CryptoObjectMsp.Builder().component(mspCryptoCompModel)
+        .ca(mspCryptoCaModel).tlsca(mspCryptoCaModel).build();
 
     // Construct an instance of the CryptoObject model
-    CryptoObject cryptoObjectModel = new CryptoObject.Builder()
-    .enrollment(cryptoObjectEnrollmentModel)
-    .msp(cryptoObjectMspModel)
-    .build();
+    CryptoObject cryptoObjectModel = new CryptoObject.Builder().enrollment(cryptoObjectEnrollmentModel)
+        .msp(cryptoObjectMspModel).build();
 
     // Construct an instance of the ConfigPeerKeepaliveClient model
-    ConfigPeerKeepaliveClient configPeerKeepaliveClientModel = new ConfigPeerKeepaliveClient.Builder()
-    .interval("60s")
-    .timeout("20s")
-    .build();
+    ConfigPeerKeepaliveClient configPeerKeepaliveClientModel = new ConfigPeerKeepaliveClient.Builder().interval("60s")
+        .timeout("20s").build();
 
     // Construct an instance of the ConfigPeerKeepaliveDeliveryClient model
     ConfigPeerKeepaliveDeliveryClient configPeerKeepaliveDeliveryClientModel = new ConfigPeerKeepaliveDeliveryClient.Builder()
-    .interval("60s")
-    .timeout("20s")
-    .build();
+        .interval("60s").timeout("20s").build();
 
     // Construct an instance of the ConfigPeerKeepalive model
-    ConfigPeerKeepalive configPeerKeepaliveModel = new ConfigPeerKeepalive.Builder()
-    .minInterval("60s")
-    .client(configPeerKeepaliveClientModel)
-    .deliveryClient(configPeerKeepaliveDeliveryClientModel)
-    .build();
+    ConfigPeerKeepalive configPeerKeepaliveModel = new ConfigPeerKeepalive.Builder().minInterval("60s")
+        .client(configPeerKeepaliveClientModel).deliveryClient(configPeerKeepaliveDeliveryClientModel).build();
 
     // Construct an instance of the ConfigPeerGossipElection model
     ConfigPeerGossipElection configPeerGossipElectionModel = new ConfigPeerGossipElection.Builder()
-    .startupGracePeriod("15s")
-    .membershipSampleInterval("1s")
-    .leaderAliveThreshold("10s")
-    .leaderElectionDuration("5s")
-    .build();
+        .startupGracePeriod("15s").membershipSampleInterval("1s").leaderAliveThreshold("10s")
+        .leaderElectionDuration("5s").build();
 
-    // Construct an instance of the ConfigPeerGossipPvtDataImplicitCollectionDisseminationPolicy model
+    // Construct an instance of the
+    // ConfigPeerGossipPvtDataImplicitCollectionDisseminationPolicy model
     ConfigPeerGossipPvtDataImplicitCollectionDisseminationPolicy configPeerGossipPvtDataImplicitCollectionDisseminationPolicyModel = new ConfigPeerGossipPvtDataImplicitCollectionDisseminationPolicy.Builder()
-    .requiredPeerCount(Double.valueOf("0"))
-    .maxPeerCount(Double.valueOf("1"))
-    .build();
+        .requiredPeerCount(Double.valueOf("0")).maxPeerCount(Double.valueOf("1")).build();
 
     // Construct an instance of the ConfigPeerGossipPvtData model
     ConfigPeerGossipPvtData configPeerGossipPvtDataModel = new ConfigPeerGossipPvtData.Builder()
-    .pullRetryThreshold("60s")
-    .transientstoreMaxBlockRetention(Double.valueOf("1000"))
-    .pushAckTimeout("3s")
-    .btlPullMargin(Double.valueOf("10"))
-    .reconcileBatchSize(Double.valueOf("10"))
-    .reconcileSleepInterval("1m")
-    .reconciliationEnabled(true)
-    .skipPullingInvalidTransactionsDuringCommit(false)
-    .implicitCollectionDisseminationPolicy(configPeerGossipPvtDataImplicitCollectionDisseminationPolicyModel)
-    .build();
+        .pullRetryThreshold("60s").transientstoreMaxBlockRetention(Double.valueOf("1000")).pushAckTimeout("3s")
+        .btlPullMargin(Double.valueOf("10")).reconcileBatchSize(Double.valueOf("10")).reconcileSleepInterval("1m")
+        .reconciliationEnabled(true).skipPullingInvalidTransactionsDuringCommit(false)
+        .implicitCollectionDisseminationPolicy(configPeerGossipPvtDataImplicitCollectionDisseminationPolicyModel)
+        .build();
 
     // Construct an instance of the ConfigPeerGossipState model
-    ConfigPeerGossipState configPeerGossipStateModel = new ConfigPeerGossipState.Builder()
-    .enabled(true)
-    .checkInterval("10s")
-    .responseTimeout("3s")
-    .batchSize(Double.valueOf("10"))
-    .blockBufferSize(Double.valueOf("100"))
-    .maxRetries(Double.valueOf("3"))
-    .build();
+    ConfigPeerGossipState configPeerGossipStateModel = new ConfigPeerGossipState.Builder().enabled(true)
+        .checkInterval("10s").responseTimeout("3s").batchSize(Double.valueOf("10"))
+        .blockBufferSize(Double.valueOf("100")).maxRetries(Double.valueOf("3")).build();
 
     // Construct an instance of the ConfigPeerGossip model
-    ConfigPeerGossip configPeerGossipModel = new ConfigPeerGossip.Builder()
-    .useLeaderElection(true)
-    .orgLeader(false)
-    .membershipTrackerInterval("5s")
-    .maxBlockCountToStore(Double.valueOf("100"))
-    .maxPropagationBurstLatency("10ms")
-    .maxPropagationBurstSize(Double.valueOf("10"))
-    .propagateIterations(Double.valueOf("3"))
-    .pullInterval("4s")
-    .pullPeerNum(Double.valueOf("3"))
-    .requestStateInfoInterval("4s")
-    .publishStateInfoInterval("4s")
-    .stateInfoRetentionInterval("0s")
-    .publishCertPeriod("10s")
-    .skipBlockVerification(false)
-    .dialTimeout("3s")
-    .connTimeout("2s")
-    .recvBuffSize(Double.valueOf("20"))
-    .sendBuffSize(Double.valueOf("200"))
-    .digestWaitTime("1s")
-    .requestWaitTime("1500ms")
-    .responseWaitTime("2s")
-    .aliveTimeInterval("5s")
-    .aliveExpirationTimeout("25s")
-    .reconnectInterval("25s")
-    .election(configPeerGossipElectionModel)
-    .pvtData(configPeerGossipPvtDataModel)
-    .state(configPeerGossipStateModel)
-    .build();
+    ConfigPeerGossip configPeerGossipModel = new ConfigPeerGossip.Builder().useLeaderElection(true).orgLeader(false)
+        .membershipTrackerInterval("5s").maxBlockCountToStore(Double.valueOf("100")).maxPropagationBurstLatency("10ms")
+        .maxPropagationBurstSize(Double.valueOf("10")).propagateIterations(Double.valueOf("3")).pullInterval("4s")
+        .pullPeerNum(Double.valueOf("3")).requestStateInfoInterval("4s").publishStateInfoInterval("4s")
+        .stateInfoRetentionInterval("0s").publishCertPeriod("10s").skipBlockVerification(false).dialTimeout("3s")
+        .connTimeout("2s").recvBuffSize(Double.valueOf("20")).sendBuffSize(Double.valueOf("200")).digestWaitTime("1s")
+        .requestWaitTime("1500ms").responseWaitTime("2s").aliveTimeInterval("5s").aliveExpirationTimeout("25s")
+        .reconnectInterval("25s").election(configPeerGossipElectionModel).pvtData(configPeerGossipPvtDataModel)
+        .state(configPeerGossipStateModel).build();
 
     // Construct an instance of the ConfigPeerAuthentication model
-    ConfigPeerAuthentication configPeerAuthenticationModel = new ConfigPeerAuthentication.Builder()
-    .timewindow("15m")
-    .build();
+    ConfigPeerAuthentication configPeerAuthenticationModel = new ConfigPeerAuthentication.Builder().timewindow("15m")
+        .build();
 
     // Construct an instance of the BccspSW model
-    BccspSW bccspSwModel = new BccspSW.Builder()
-    .hash("SHA2")
-    .security(Double.valueOf("256"))
-    .build();
+    BccspSW bccspSwModel = new BccspSW.Builder().hash("SHA2").security(Double.valueOf("256")).build();
 
     // Construct an instance of the BccspPKCS11 model
-    BccspPKCS11 bccspPkcS11Model = new BccspPKCS11.Builder()
-    .label("testString")
-    .pin("testString")
-    .hash("SHA2")
-    .security(Double.valueOf("256"))
-    .build();
+    BccspPKCS11 bccspPkcS11Model = new BccspPKCS11.Builder().label("testString").pin("testString").hash("SHA2")
+        .security(Double.valueOf("256")).build();
 
     // Construct an instance of the Bccsp model
-    Bccsp bccspModel = new Bccsp.Builder()
-    .xDefault("SW")
-    .sw(bccspSwModel)
-    .pkcS11(bccspPkcS11Model)
-    .build();
+    Bccsp bccspModel = new Bccsp.Builder().xDefault("SW").sw(bccspSwModel).pkcS11(bccspPkcS11Model).build();
 
     // Construct an instance of the ConfigPeerClient model
-    ConfigPeerClient configPeerClientModel = new ConfigPeerClient.Builder()
-    .connTimeout("2s")
-    .build();
+    ConfigPeerClient configPeerClientModel = new ConfigPeerClient.Builder().connTimeout("2s").build();
 
-    // Construct an instance of the ConfigPeerDeliveryclientAddressOverridesItem model
+    // Construct an instance of the ConfigPeerDeliveryclientAddressOverridesItem
+    // model
     ConfigPeerDeliveryclientAddressOverridesItem configPeerDeliveryclientAddressOverridesItemModel = new ConfigPeerDeliveryclientAddressOverridesItem.Builder()
-    .from("n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050")
-    .to("n3a3ec3-myorderer2.ibp.us-south.containers.appdomain.cloud:7050")
-    .caCertsFile("my-data/cert.pem")
-    .build();
+        .from("n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050")
+        .to("n3a3ec3-myorderer2.ibp.us-south.containers.appdomain.cloud:7050").caCertsFile("my-data/cert.pem").build();
 
     // Construct an instance of the ConfigPeerDeliveryclient model
     ConfigPeerDeliveryclient configPeerDeliveryclientModel = new ConfigPeerDeliveryclient.Builder()
-    .reconnectTotalTimeThreshold("60m")
-    .connTimeout("2s")
-    .reConnectBackoffThreshold("60m")
-    .addressOverrides(new java.util.ArrayList<ConfigPeerDeliveryclientAddressOverridesItem>(java.util.Arrays.asList(configPeerDeliveryclientAddressOverridesItemModel)))
-    .build();
+        .reconnectTotalTimeThreshold("60m").connTimeout("2s").reConnectBackoffThreshold("60m")
+        .addressOverrides(new java.util.ArrayList<ConfigPeerDeliveryclientAddressOverridesItem>(
+            java.util.Arrays.asList(configPeerDeliveryclientAddressOverridesItemModel)))
+        .build();
 
     // Construct an instance of the ConfigPeerAdminService model
     ConfigPeerAdminService configPeerAdminServiceModel = new ConfigPeerAdminService.Builder()
-    .listenAddress("0.0.0.0:7051")
-    .build();
+        .listenAddress("0.0.0.0:7051").build();
 
     // Construct an instance of the ConfigPeerDiscovery model
-    ConfigPeerDiscovery configPeerDiscoveryModel = new ConfigPeerDiscovery.Builder()
-    .enabled(true)
-    .authCacheEnabled(true)
-    .authCacheMaxSize(Double.valueOf("1000"))
-    .authCachePurgeRetentionRatio(Double.valueOf("0.75"))
-    .orgMembersAllowedAccess(false)
-    .build();
+    ConfigPeerDiscovery configPeerDiscoveryModel = new ConfigPeerDiscovery.Builder().enabled(true)
+        .authCacheEnabled(true).authCacheMaxSize(Double.valueOf("1000"))
+        .authCachePurgeRetentionRatio(Double.valueOf("0.75")).orgMembersAllowedAccess(false).build();
 
     // Construct an instance of the ConfigPeerLimitsConcurrency model
     ConfigPeerLimitsConcurrency configPeerLimitsConcurrencyModel = new ConfigPeerLimitsConcurrency.Builder()
-    .endorserService(Double.valueOf("2500"))
-    .deliverService(Double.valueOf("2500"))
-    .build();
+        .endorserService(Double.valueOf("2500")).deliverService(Double.valueOf("2500")).build();
 
     // Construct an instance of the ConfigPeerLimits model
     ConfigPeerLimits configPeerLimitsModel = new ConfigPeerLimits.Builder()
-    .concurrency(configPeerLimitsConcurrencyModel)
-    .build();
+        .concurrency(configPeerLimitsConcurrencyModel).build();
 
     // Construct an instance of the ConfigPeerCreatePeer model
-    ConfigPeerCreatePeer configPeerCreatePeerModel = new ConfigPeerCreatePeer.Builder()
-    .id("john-doe")
-    .networkId("dev")
-    .keepalive(configPeerKeepaliveModel)
-    .gossip(configPeerGossipModel)
-    .authentication(configPeerAuthenticationModel)
-    .bccsp(bccspModel)
-    .client(configPeerClientModel)
-    .deliveryclient(configPeerDeliveryclientModel)
-    .adminService(configPeerAdminServiceModel)
-    .validatorPoolSize(Double.valueOf("8"))
-    .discovery(configPeerDiscoveryModel)
-    .limits(configPeerLimitsModel)
-    .build();
+    ConfigPeerCreatePeer configPeerCreatePeerModel = new ConfigPeerCreatePeer.Builder().id("john-doe").networkId("dev")
+        .keepalive(configPeerKeepaliveModel).gossip(configPeerGossipModel).authentication(configPeerAuthenticationModel)
+        .bccsp(bccspModel).client(configPeerClientModel).deliveryclient(configPeerDeliveryclientModel)
+        .adminService(configPeerAdminServiceModel).validatorPoolSize(Double.valueOf("8"))
+        .discovery(configPeerDiscoveryModel).limits(configPeerLimitsModel).build();
 
     // Construct an instance of the ConfigPeerChaincodeGolang model
     ConfigPeerChaincodeGolang configPeerChaincodeGolangModel = new ConfigPeerChaincodeGolang.Builder()
-    .dynamicLink(false)
-    .build();
+        .dynamicLink(false).build();
 
     // Construct an instance of the ConfigPeerChaincodeExternalBuildersItem model
     ConfigPeerChaincodeExternalBuildersItem configPeerChaincodeExternalBuildersItemModel = new ConfigPeerChaincodeExternalBuildersItem.Builder()
-    .path("/path/to/directory")
-    .name("descriptive-build-name")
-    .environmentWhitelist(new java.util.ArrayList<String>(java.util.Arrays.asList("GOPROXY")))
-    .build();
+        .path("/path/to/directory").name("descriptive-build-name")
+        .environmentWhitelist(new java.util.ArrayList<String>(java.util.Arrays.asList("GOPROXY"))).build();
 
     // Construct an instance of the ConfigPeerChaincodeSystem model
-    ConfigPeerChaincodeSystem configPeerChaincodeSystemModel = new ConfigPeerChaincodeSystem.Builder()
-    .cscc(true)
-    .lscc(true)
-    .escc(true)
-    .vscc(true)
-    .qscc(true)
-    .build();
+    ConfigPeerChaincodeSystem configPeerChaincodeSystemModel = new ConfigPeerChaincodeSystem.Builder().cscc(true)
+        .lscc(true).escc(true).vscc(true).qscc(true).build();
 
     // Construct an instance of the ConfigPeerChaincodeLogging model
-    ConfigPeerChaincodeLogging configPeerChaincodeLoggingModel = new ConfigPeerChaincodeLogging.Builder()
-    .level("info")
-    .shim("warning")
-    .format("%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}")
-    .build();
+    ConfigPeerChaincodeLogging configPeerChaincodeLoggingModel = new ConfigPeerChaincodeLogging.Builder().level("info")
+        .shim("warning")
+        .format(
+            "%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}")
+        .build();
 
     // Construct an instance of the ConfigPeerChaincode model
     ConfigPeerChaincode configPeerChaincodeModel = new ConfigPeerChaincode.Builder()
-    .golang(configPeerChaincodeGolangModel)
-    .externalBuilders(new java.util.ArrayList<ConfigPeerChaincodeExternalBuildersItem>(java.util.Arrays.asList(configPeerChaincodeExternalBuildersItemModel)))
-    .installTimeout("300s")
-    .startuptimeout("300s")
-    .executetimeout("30s")
-    .system(configPeerChaincodeSystemModel)
-    .logging(configPeerChaincodeLoggingModel)
-    .build();
+        .golang(configPeerChaincodeGolangModel)
+        .externalBuilders(new java.util.ArrayList<ConfigPeerChaincodeExternalBuildersItem>(
+            java.util.Arrays.asList(configPeerChaincodeExternalBuildersItemModel)))
+        .installTimeout("300s").startuptimeout("300s").executetimeout("30s").system(configPeerChaincodeSystemModel)
+        .logging(configPeerChaincodeLoggingModel).build();
 
     // Construct an instance of the MetricsStatsd model
-    MetricsStatsd metricsStatsdModel = new MetricsStatsd.Builder()
-    .network("udp")
-    .address("127.0.0.1:8125")
-    .writeInterval("10s")
-    .prefix("server")
-    .build();
+    MetricsStatsd metricsStatsdModel = new MetricsStatsd.Builder().network("udp").address("127.0.0.1:8125")
+        .writeInterval("10s").prefix("server").build();
 
     // Construct an instance of the Metrics model
-    Metrics metricsModel = new Metrics.Builder()
-    .provider("prometheus")
-    .statsd(metricsStatsdModel)
-    .build();
+    Metrics metricsModel = new Metrics.Builder().provider("prometheus").statsd(metricsStatsdModel).build();
 
     // Construct an instance of the ConfigPeerCreate model
-    ConfigPeerCreate configPeerCreateModel = new ConfigPeerCreate.Builder()
-    .peer(configPeerCreatePeerModel)
-    .chaincode(configPeerChaincodeModel)
-    .metrics(metricsModel)
-    .build();
+    ConfigPeerCreate configPeerCreateModel = new ConfigPeerCreate.Builder().peer(configPeerCreatePeerModel)
+        .chaincode(configPeerChaincodeModel).metrics(metricsModel).build();
 
     // Construct an instance of the ResourceRequests model
-    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceLimits model
-    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceObjectFabV2 model
-    ResourceObjectFabV2 resourceObjectFabV2Model = new ResourceObjectFabV2.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+    ResourceObjectFabV2 resourceObjectFabV2Model = new ResourceObjectFabV2.Builder().requests(resourceRequestsModel)
+        .limits(resourceLimitsModel).build();
 
     // Construct an instance of the ResourceObjectCouchDb model
     ResourceObjectCouchDb resourceObjectCouchDbModel = new ResourceObjectCouchDb.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+        .requests(resourceRequestsModel).limits(resourceLimitsModel).build();
 
     // Construct an instance of the ResourceObject model
-    ResourceObject resourceObjectModel = new ResourceObject.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+    ResourceObject resourceObjectModel = new ResourceObject.Builder().requests(resourceRequestsModel)
+        .limits(resourceLimitsModel).build();
 
     // Construct an instance of the ResourceObjectFabV1 model
-    ResourceObjectFabV1 resourceObjectFabV1Model = new ResourceObjectFabV1.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+    ResourceObjectFabV1 resourceObjectFabV1Model = new ResourceObjectFabV1.Builder().requests(resourceRequestsModel)
+        .limits(resourceLimitsModel).build();
 
     // Construct an instance of the PeerResources model
-    PeerResources peerResourcesModel = new PeerResources.Builder()
-    .chaincodelauncher(resourceObjectFabV2Model)
-    .couchdb(resourceObjectCouchDbModel)
-    .statedb(resourceObjectModel)
-    .dind(resourceObjectFabV1Model)
-    .fluentd(resourceObjectFabV1Model)
-    .peer(resourceObjectModel)
-    .proxy(resourceObjectModel)
-    .build();
+    PeerResources peerResourcesModel = new PeerResources.Builder().chaincodelauncher(resourceObjectFabV2Model)
+        .couchdb(resourceObjectCouchDbModel).statedb(resourceObjectModel).dind(resourceObjectFabV1Model)
+        .fluentd(resourceObjectFabV1Model).peer(resourceObjectModel).proxy(resourceObjectModel).build();
 
     // Construct an instance of the StorageObject model
-    StorageObject storageObjectModel = new StorageObject.Builder()
-    .size("4GiB")
-    .xClass("default")
-    .build();
+    StorageObject storageObjectModel = new StorageObject.Builder().size("4GiB").xClass("default").build();
 
     // Construct an instance of the CreatePeerBodyStorage model
-    CreatePeerBodyStorage createPeerBodyStorageModel = new CreatePeerBodyStorage.Builder()
-    .peer(storageObjectModel)
-    .statedb(storageObjectModel)
-    .build();
+    CreatePeerBodyStorage createPeerBodyStorageModel = new CreatePeerBodyStorage.Builder().peer(storageObjectModel)
+        .statedb(storageObjectModel).build();
 
     // Construct an instance of the Hsm model
-    Hsm hsmModel = new Hsm.Builder()
-    .pkcs11endpoint("tcp://example.com:666")
-    .build();
+    Hsm hsmModel = new Hsm.Builder().pkcs11endpoint("tcp://example.com:666").build();
 
     // Construct an instance of the CreatePeerOptions model
-    CreatePeerOptions createPeerOptionsModel = new CreatePeerOptions.Builder()
-    .mspId("Org1")
-    .displayName("My Peer")
-    .crypto(cryptoObjectModel)
-    .configOverride(configPeerCreateModel)
-    .resources(peerResourcesModel)
-    .storage(createPeerBodyStorageModel)
-    .zone("-")
-    .stateDb("couchdb")
-    .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
-    .hsm(hsmModel)
-    .region("-")
-    .version("1.4.6-1")
-    .build();
+    CreatePeerOptions createPeerOptionsModel = new CreatePeerOptions.Builder().mspId("Org1").displayName("My Peer")
+        .crypto(cryptoObjectModel).configOverride(configPeerCreateModel).resources(peerResourcesModel)
+        .storage(createPeerBodyStorageModel).zone("-").stateDb("couchdb")
+        .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca"))).hsm(hsmModel).region("-")
+        .version("1.4.6-1").build();
 
     // Invoke operation with valid options model (positive test)
     Response<PeerResponse> response = blockchainService.createPeer(createPeerOptionsModel).execute();
@@ -1749,50 +1298,42 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"display_name\": \"My Peer\", \"grpcwp_url\": \"https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084\", \"location\": \"ibmcloud\", \"operations_url\": \"https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"node_ou\": {\"enabled\": true}, \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"resources\": {\"peer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"statedb\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"state_db\": \"couchdb\", \"storage\": {\"peer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"statedb\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"type\": \"fabric-peer\", \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String importPeerPath = "/ak/api/v3/components/fabric-peer";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the MspCryptoFieldCa model
-    MspCryptoFieldCa mspCryptoFieldCaModel = new MspCryptoFieldCa.Builder()
-    .name("ca")
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    MspCryptoFieldCa mspCryptoFieldCaModel = new MspCryptoFieldCa.Builder().name("ca")
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the MspCryptoFieldTlsca model
-    MspCryptoFieldTlsca mspCryptoFieldTlscaModel = new MspCryptoFieldTlsca.Builder()
-    .name("tlsca")
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    MspCryptoFieldTlsca mspCryptoFieldTlscaModel = new MspCryptoFieldTlsca.Builder().name("tlsca")
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the MspCryptoFieldComponent model
-    MspCryptoFieldComponent mspCryptoFieldComponentModel = new MspCryptoFieldComponent.Builder()
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .ecert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    MspCryptoFieldComponent mspCryptoFieldComponentModel = new MspCryptoFieldComponent.Builder().tlsCert(
+        "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .ecert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the MspCryptoField model
-    MspCryptoField mspCryptoFieldModel = new MspCryptoField.Builder()
-    .ca(mspCryptoFieldCaModel)
-    .tlsca(mspCryptoFieldTlscaModel)
-    .component(mspCryptoFieldComponentModel)
-    .build();
+    MspCryptoField mspCryptoFieldModel = new MspCryptoField.Builder().ca(mspCryptoFieldCaModel)
+        .tlsca(mspCryptoFieldTlscaModel).component(mspCryptoFieldComponentModel).build();
 
     // Construct an instance of the ImportPeerOptions model
-    ImportPeerOptions importPeerOptionsModel = new ImportPeerOptions.Builder()
-    .displayName("My Peer")
-    .grpcwpUrl("https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084")
-    .msp(mspCryptoFieldModel)
-    .mspId("Org1")
-    .apiUrl("grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051")
-    .location("ibmcloud")
-    .operationsUrl("https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443")
-    .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
-    .build();
+    ImportPeerOptions importPeerOptionsModel = new ImportPeerOptions.Builder().displayName("My Peer")
+        .grpcwpUrl("https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084").msp(mspCryptoFieldModel)
+        .mspId("Org1").apiUrl("grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051")
+        .location("ibmcloud").operationsUrl("https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443")
+        .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca"))).build();
 
     // Invoke operation with valid options model (positive test)
     Response<PeerResponse> response = blockchainService.importPeer(importPeerOptionsModel).execute();
@@ -1832,24 +1373,17 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"display_name\": \"My Peer\", \"grpcwp_url\": \"https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084\", \"location\": \"ibmcloud\", \"operations_url\": \"https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"node_ou\": {\"enabled\": true}, \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"resources\": {\"peer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"statedb\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"state_db\": \"couchdb\", \"storage\": {\"peer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"statedb\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"type\": \"fabric-peer\", \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String editPeerPath = "/ak/api/v3/components/fabric-peer/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the EditPeerOptions model
-    EditPeerOptions editPeerOptionsModel = new EditPeerOptions.Builder()
-    .id("testString")
-    .displayName("My Peer")
-    .apiUrl("grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051")
-    .operationsUrl("https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443")
-    .grpcwpUrl("https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084")
-    .mspId("Org1")
-    .location("ibmcloud")
-    .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
-    .build();
+    EditPeerOptions editPeerOptionsModel = new EditPeerOptions.Builder().id("testString").displayName("My Peer")
+        .apiUrl("grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051")
+        .operationsUrl("https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443")
+        .grpcwpUrl("https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084").mspId("Org1")
+        .location("ibmcloud").tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca"))).build();
 
     // Invoke operation with valid options model (positive test)
     Response<PeerResponse> response = blockchainService.editPeer(editPeerOptionsModel).execute();
@@ -1889,33 +1423,20 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"accepted\", \"id\": \"myca\", \"actions\": [\"restart\"]}";
     String peerActionPath = "/ak/api/v3/kubernetes/components/fabric-peer/testString/actions";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(202)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(202)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ActionReenroll model
-    ActionReenroll actionReenrollModel = new ActionReenroll.Builder()
-    .tlsCert(true)
-    .ecert(true)
-    .build();
+    ActionReenroll actionReenrollModel = new ActionReenroll.Builder().tlsCert(true).ecert(true).build();
 
     // Construct an instance of the ActionEnroll model
-    ActionEnroll actionEnrollModel = new ActionEnroll.Builder()
-    .tlsCert(true)
-    .ecert(true)
-    .build();
+    ActionEnroll actionEnrollModel = new ActionEnroll.Builder().tlsCert(true).ecert(true).build();
 
     // Construct an instance of the PeerActionOptions model
-    PeerActionOptions peerActionOptionsModel = new PeerActionOptions.Builder()
-    .id("testString")
-    .restart(true)
-    .reenroll(actionReenrollModel)
-    .enroll(actionEnrollModel)
-    .upgradeDbs(true)
-    .build();
+    PeerActionOptions peerActionOptionsModel = new PeerActionOptions.Builder().id("testString").restart(true)
+        .reenroll(actionReenrollModel).enroll(actionEnrollModel).upgradeDbs(true).build();
 
     // Invoke operation with valid options model (positive test)
     Response<ActionsResponse> response = blockchainService.peerAction(peerActionOptionsModel).execute();
@@ -1955,363 +1476,238 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"display_name\": \"My Peer\", \"grpcwp_url\": \"https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084\", \"location\": \"ibmcloud\", \"operations_url\": \"https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"node_ou\": {\"enabled\": true}, \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"resources\": {\"peer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"statedb\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"state_db\": \"couchdb\", \"storage\": {\"peer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"statedb\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"type\": \"fabric-peer\", \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String updatePeerPath = "/ak/api/v3/kubernetes/components/fabric-peer/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ConfigPeerKeepaliveClient model
-    ConfigPeerKeepaliveClient configPeerKeepaliveClientModel = new ConfigPeerKeepaliveClient.Builder()
-    .interval("60s")
-    .timeout("20s")
-    .build();
+    ConfigPeerKeepaliveClient configPeerKeepaliveClientModel = new ConfigPeerKeepaliveClient.Builder().interval("60s")
+        .timeout("20s").build();
 
     // Construct an instance of the ConfigPeerKeepaliveDeliveryClient model
     ConfigPeerKeepaliveDeliveryClient configPeerKeepaliveDeliveryClientModel = new ConfigPeerKeepaliveDeliveryClient.Builder()
-    .interval("60s")
-    .timeout("20s")
-    .build();
+        .interval("60s").timeout("20s").build();
 
     // Construct an instance of the ConfigPeerKeepalive model
-    ConfigPeerKeepalive configPeerKeepaliveModel = new ConfigPeerKeepalive.Builder()
-    .minInterval("60s")
-    .client(configPeerKeepaliveClientModel)
-    .deliveryClient(configPeerKeepaliveDeliveryClientModel)
-    .build();
+    ConfigPeerKeepalive configPeerKeepaliveModel = new ConfigPeerKeepalive.Builder().minInterval("60s")
+        .client(configPeerKeepaliveClientModel).deliveryClient(configPeerKeepaliveDeliveryClientModel).build();
 
     // Construct an instance of the ConfigPeerGossipElection model
     ConfigPeerGossipElection configPeerGossipElectionModel = new ConfigPeerGossipElection.Builder()
-    .startupGracePeriod("15s")
-    .membershipSampleInterval("1s")
-    .leaderAliveThreshold("10s")
-    .leaderElectionDuration("5s")
-    .build();
+        .startupGracePeriod("15s").membershipSampleInterval("1s").leaderAliveThreshold("10s")
+        .leaderElectionDuration("5s").build();
 
-    // Construct an instance of the ConfigPeerGossipPvtDataImplicitCollectionDisseminationPolicy model
+    // Construct an instance of the
+    // ConfigPeerGossipPvtDataImplicitCollectionDisseminationPolicy model
     ConfigPeerGossipPvtDataImplicitCollectionDisseminationPolicy configPeerGossipPvtDataImplicitCollectionDisseminationPolicyModel = new ConfigPeerGossipPvtDataImplicitCollectionDisseminationPolicy.Builder()
-    .requiredPeerCount(Double.valueOf("0"))
-    .maxPeerCount(Double.valueOf("1"))
-    .build();
+        .requiredPeerCount(Double.valueOf("0")).maxPeerCount(Double.valueOf("1")).build();
 
     // Construct an instance of the ConfigPeerGossipPvtData model
     ConfigPeerGossipPvtData configPeerGossipPvtDataModel = new ConfigPeerGossipPvtData.Builder()
-    .pullRetryThreshold("60s")
-    .transientstoreMaxBlockRetention(Double.valueOf("1000"))
-    .pushAckTimeout("3s")
-    .btlPullMargin(Double.valueOf("10"))
-    .reconcileBatchSize(Double.valueOf("10"))
-    .reconcileSleepInterval("1m")
-    .reconciliationEnabled(true)
-    .skipPullingInvalidTransactionsDuringCommit(false)
-    .implicitCollectionDisseminationPolicy(configPeerGossipPvtDataImplicitCollectionDisseminationPolicyModel)
-    .build();
+        .pullRetryThreshold("60s").transientstoreMaxBlockRetention(Double.valueOf("1000")).pushAckTimeout("3s")
+        .btlPullMargin(Double.valueOf("10")).reconcileBatchSize(Double.valueOf("10")).reconcileSleepInterval("1m")
+        .reconciliationEnabled(true).skipPullingInvalidTransactionsDuringCommit(false)
+        .implicitCollectionDisseminationPolicy(configPeerGossipPvtDataImplicitCollectionDisseminationPolicyModel)
+        .build();
 
     // Construct an instance of the ConfigPeerGossipState model
-    ConfigPeerGossipState configPeerGossipStateModel = new ConfigPeerGossipState.Builder()
-    .enabled(true)
-    .checkInterval("10s")
-    .responseTimeout("3s")
-    .batchSize(Double.valueOf("10"))
-    .blockBufferSize(Double.valueOf("100"))
-    .maxRetries(Double.valueOf("3"))
-    .build();
+    ConfigPeerGossipState configPeerGossipStateModel = new ConfigPeerGossipState.Builder().enabled(true)
+        .checkInterval("10s").responseTimeout("3s").batchSize(Double.valueOf("10"))
+        .blockBufferSize(Double.valueOf("100")).maxRetries(Double.valueOf("3")).build();
 
     // Construct an instance of the ConfigPeerGossip model
-    ConfigPeerGossip configPeerGossipModel = new ConfigPeerGossip.Builder()
-    .useLeaderElection(true)
-    .orgLeader(false)
-    .membershipTrackerInterval("5s")
-    .maxBlockCountToStore(Double.valueOf("100"))
-    .maxPropagationBurstLatency("10ms")
-    .maxPropagationBurstSize(Double.valueOf("10"))
-    .propagateIterations(Double.valueOf("3"))
-    .pullInterval("4s")
-    .pullPeerNum(Double.valueOf("3"))
-    .requestStateInfoInterval("4s")
-    .publishStateInfoInterval("4s")
-    .stateInfoRetentionInterval("0s")
-    .publishCertPeriod("10s")
-    .skipBlockVerification(false)
-    .dialTimeout("3s")
-    .connTimeout("2s")
-    .recvBuffSize(Double.valueOf("20"))
-    .sendBuffSize(Double.valueOf("200"))
-    .digestWaitTime("1s")
-    .requestWaitTime("1500ms")
-    .responseWaitTime("2s")
-    .aliveTimeInterval("5s")
-    .aliveExpirationTimeout("25s")
-    .reconnectInterval("25s")
-    .election(configPeerGossipElectionModel)
-    .pvtData(configPeerGossipPvtDataModel)
-    .state(configPeerGossipStateModel)
-    .build();
+    ConfigPeerGossip configPeerGossipModel = new ConfigPeerGossip.Builder().useLeaderElection(true).orgLeader(false)
+        .membershipTrackerInterval("5s").maxBlockCountToStore(Double.valueOf("100")).maxPropagationBurstLatency("10ms")
+        .maxPropagationBurstSize(Double.valueOf("10")).propagateIterations(Double.valueOf("3")).pullInterval("4s")
+        .pullPeerNum(Double.valueOf("3")).requestStateInfoInterval("4s").publishStateInfoInterval("4s")
+        .stateInfoRetentionInterval("0s").publishCertPeriod("10s").skipBlockVerification(false).dialTimeout("3s")
+        .connTimeout("2s").recvBuffSize(Double.valueOf("20")).sendBuffSize(Double.valueOf("200")).digestWaitTime("1s")
+        .requestWaitTime("1500ms").responseWaitTime("2s").aliveTimeInterval("5s").aliveExpirationTimeout("25s")
+        .reconnectInterval("25s").election(configPeerGossipElectionModel).pvtData(configPeerGossipPvtDataModel)
+        .state(configPeerGossipStateModel).build();
 
     // Construct an instance of the ConfigPeerAuthentication model
-    ConfigPeerAuthentication configPeerAuthenticationModel = new ConfigPeerAuthentication.Builder()
-    .timewindow("15m")
-    .build();
+    ConfigPeerAuthentication configPeerAuthenticationModel = new ConfigPeerAuthentication.Builder().timewindow("15m")
+        .build();
 
     // Construct an instance of the ConfigPeerClient model
-    ConfigPeerClient configPeerClientModel = new ConfigPeerClient.Builder()
-    .connTimeout("2s")
-    .build();
+    ConfigPeerClient configPeerClientModel = new ConfigPeerClient.Builder().connTimeout("2s").build();
 
-    // Construct an instance of the ConfigPeerDeliveryclientAddressOverridesItem model
+    // Construct an instance of the ConfigPeerDeliveryclientAddressOverridesItem
+    // model
     ConfigPeerDeliveryclientAddressOverridesItem configPeerDeliveryclientAddressOverridesItemModel = new ConfigPeerDeliveryclientAddressOverridesItem.Builder()
-    .from("n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050")
-    .to("n3a3ec3-myorderer2.ibp.us-south.containers.appdomain.cloud:7050")
-    .caCertsFile("my-data/cert.pem")
-    .build();
+        .from("n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050")
+        .to("n3a3ec3-myorderer2.ibp.us-south.containers.appdomain.cloud:7050").caCertsFile("my-data/cert.pem").build();
 
     // Construct an instance of the ConfigPeerDeliveryclient model
     ConfigPeerDeliveryclient configPeerDeliveryclientModel = new ConfigPeerDeliveryclient.Builder()
-    .reconnectTotalTimeThreshold("60m")
-    .connTimeout("2s")
-    .reConnectBackoffThreshold("60m")
-    .addressOverrides(new java.util.ArrayList<ConfigPeerDeliveryclientAddressOverridesItem>(java.util.Arrays.asList(configPeerDeliveryclientAddressOverridesItemModel)))
-    .build();
+        .reconnectTotalTimeThreshold("60m").connTimeout("2s").reConnectBackoffThreshold("60m")
+        .addressOverrides(new java.util.ArrayList<ConfigPeerDeliveryclientAddressOverridesItem>(
+            java.util.Arrays.asList(configPeerDeliveryclientAddressOverridesItemModel)))
+        .build();
 
     // Construct an instance of the ConfigPeerAdminService model
     ConfigPeerAdminService configPeerAdminServiceModel = new ConfigPeerAdminService.Builder()
-    .listenAddress("0.0.0.0:7051")
-    .build();
+        .listenAddress("0.0.0.0:7051").build();
 
     // Construct an instance of the ConfigPeerDiscovery model
-    ConfigPeerDiscovery configPeerDiscoveryModel = new ConfigPeerDiscovery.Builder()
-    .enabled(true)
-    .authCacheEnabled(true)
-    .authCacheMaxSize(Double.valueOf("1000"))
-    .authCachePurgeRetentionRatio(Double.valueOf("0.75"))
-    .orgMembersAllowedAccess(false)
-    .build();
+    ConfigPeerDiscovery configPeerDiscoveryModel = new ConfigPeerDiscovery.Builder().enabled(true)
+        .authCacheEnabled(true).authCacheMaxSize(Double.valueOf("1000"))
+        .authCachePurgeRetentionRatio(Double.valueOf("0.75")).orgMembersAllowedAccess(false).build();
 
     // Construct an instance of the ConfigPeerLimitsConcurrency model
     ConfigPeerLimitsConcurrency configPeerLimitsConcurrencyModel = new ConfigPeerLimitsConcurrency.Builder()
-    .endorserService(Double.valueOf("2500"))
-    .deliverService(Double.valueOf("2500"))
-    .build();
+        .endorserService(Double.valueOf("2500")).deliverService(Double.valueOf("2500")).build();
 
     // Construct an instance of the ConfigPeerLimits model
     ConfigPeerLimits configPeerLimitsModel = new ConfigPeerLimits.Builder()
-    .concurrency(configPeerLimitsConcurrencyModel)
-    .build();
+        .concurrency(configPeerLimitsConcurrencyModel).build();
 
     // Construct an instance of the ConfigPeerUpdatePeer model
-    ConfigPeerUpdatePeer configPeerUpdatePeerModel = new ConfigPeerUpdatePeer.Builder()
-    .id("john-doe")
-    .networkId("dev")
-    .keepalive(configPeerKeepaliveModel)
-    .gossip(configPeerGossipModel)
-    .authentication(configPeerAuthenticationModel)
-    .client(configPeerClientModel)
-    .deliveryclient(configPeerDeliveryclientModel)
-    .adminService(configPeerAdminServiceModel)
-    .validatorPoolSize(Double.valueOf("8"))
-    .discovery(configPeerDiscoveryModel)
-    .limits(configPeerLimitsModel)
-    .build();
+    ConfigPeerUpdatePeer configPeerUpdatePeerModel = new ConfigPeerUpdatePeer.Builder().id("john-doe").networkId("dev")
+        .keepalive(configPeerKeepaliveModel).gossip(configPeerGossipModel).authentication(configPeerAuthenticationModel)
+        .client(configPeerClientModel).deliveryclient(configPeerDeliveryclientModel)
+        .adminService(configPeerAdminServiceModel).validatorPoolSize(Double.valueOf("8"))
+        .discovery(configPeerDiscoveryModel).limits(configPeerLimitsModel).build();
 
     // Construct an instance of the ConfigPeerChaincodeGolang model
     ConfigPeerChaincodeGolang configPeerChaincodeGolangModel = new ConfigPeerChaincodeGolang.Builder()
-    .dynamicLink(false)
-    .build();
+        .dynamicLink(false).build();
 
     // Construct an instance of the ConfigPeerChaincodeExternalBuildersItem model
     ConfigPeerChaincodeExternalBuildersItem configPeerChaincodeExternalBuildersItemModel = new ConfigPeerChaincodeExternalBuildersItem.Builder()
-    .path("/path/to/directory")
-    .name("descriptive-build-name")
-    .environmentWhitelist(new java.util.ArrayList<String>(java.util.Arrays.asList("GOPROXY")))
-    .build();
+        .path("/path/to/directory").name("descriptive-build-name")
+        .environmentWhitelist(new java.util.ArrayList<String>(java.util.Arrays.asList("GOPROXY"))).build();
 
     // Construct an instance of the ConfigPeerChaincodeSystem model
-    ConfigPeerChaincodeSystem configPeerChaincodeSystemModel = new ConfigPeerChaincodeSystem.Builder()
-    .cscc(true)
-    .lscc(true)
-    .escc(true)
-    .vscc(true)
-    .qscc(true)
-    .build();
+    ConfigPeerChaincodeSystem configPeerChaincodeSystemModel = new ConfigPeerChaincodeSystem.Builder().cscc(true)
+        .lscc(true).escc(true).vscc(true).qscc(true).build();
 
     // Construct an instance of the ConfigPeerChaincodeLogging model
-    ConfigPeerChaincodeLogging configPeerChaincodeLoggingModel = new ConfigPeerChaincodeLogging.Builder()
-    .level("info")
-    .shim("warning")
-    .format("%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}")
-    .build();
+    ConfigPeerChaincodeLogging configPeerChaincodeLoggingModel = new ConfigPeerChaincodeLogging.Builder().level("info")
+        .shim("warning")
+        .format(
+            "%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}")
+        .build();
 
     // Construct an instance of the ConfigPeerChaincode model
     ConfigPeerChaincode configPeerChaincodeModel = new ConfigPeerChaincode.Builder()
-    .golang(configPeerChaincodeGolangModel)
-    .externalBuilders(new java.util.ArrayList<ConfigPeerChaincodeExternalBuildersItem>(java.util.Arrays.asList(configPeerChaincodeExternalBuildersItemModel)))
-    .installTimeout("300s")
-    .startuptimeout("300s")
-    .executetimeout("30s")
-    .system(configPeerChaincodeSystemModel)
-    .logging(configPeerChaincodeLoggingModel)
-    .build();
+        .golang(configPeerChaincodeGolangModel)
+        .externalBuilders(new java.util.ArrayList<ConfigPeerChaincodeExternalBuildersItem>(
+            java.util.Arrays.asList(configPeerChaincodeExternalBuildersItemModel)))
+        .installTimeout("300s").startuptimeout("300s").executetimeout("30s").system(configPeerChaincodeSystemModel)
+        .logging(configPeerChaincodeLoggingModel).build();
 
     // Construct an instance of the MetricsStatsd model
-    MetricsStatsd metricsStatsdModel = new MetricsStatsd.Builder()
-    .network("udp")
-    .address("127.0.0.1:8125")
-    .writeInterval("10s")
-    .prefix("server")
-    .build();
+    MetricsStatsd metricsStatsdModel = new MetricsStatsd.Builder().network("udp").address("127.0.0.1:8125")
+        .writeInterval("10s").prefix("server").build();
 
     // Construct an instance of the Metrics model
-    Metrics metricsModel = new Metrics.Builder()
-    .provider("prometheus")
-    .statsd(metricsStatsdModel)
-    .build();
+    Metrics metricsModel = new Metrics.Builder().provider("prometheus").statsd(metricsStatsdModel).build();
 
     // Construct an instance of the ConfigPeerUpdate model
-    ConfigPeerUpdate configPeerUpdateModel = new ConfigPeerUpdate.Builder()
-    .peer(configPeerUpdatePeerModel)
-    .chaincode(configPeerChaincodeModel)
-    .metrics(metricsModel)
-    .build();
+    ConfigPeerUpdate configPeerUpdateModel = new ConfigPeerUpdate.Builder().peer(configPeerUpdatePeerModel)
+        .chaincode(configPeerChaincodeModel).metrics(metricsModel).build();
 
     // Construct an instance of the CryptoEnrollmentComponent model
     CryptoEnrollmentComponent cryptoEnrollmentComponentModel = new CryptoEnrollmentComponent.Builder()
-    .admincerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+        .admincerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the UpdateEnrollmentCryptoFieldCa model
     UpdateEnrollmentCryptoFieldCa updateEnrollmentCryptoFieldCaModel = new UpdateEnrollmentCryptoFieldCa.Builder()
-    .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud")
-    .port(Double.valueOf("7054"))
-    .name("ca")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .enrollId("admin")
-    .enrollSecret("password")
-    .build();
+        .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud").port(Double.valueOf("7054")).name("ca")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .enrollId("admin").enrollSecret("password").build();
 
     // Construct an instance of the UpdateEnrollmentCryptoFieldTlsca model
     UpdateEnrollmentCryptoFieldTlsca updateEnrollmentCryptoFieldTlscaModel = new UpdateEnrollmentCryptoFieldTlsca.Builder()
-    .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud")
-    .port(Double.valueOf("7054"))
-    .name("tlsca")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .enrollId("admin")
-    .enrollSecret("password")
-    .csrHosts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+        .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud").port(Double.valueOf("7054")).name("tlsca")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .enrollId("admin").enrollSecret("password")
+        .csrHosts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the UpdateEnrollmentCryptoField model
     UpdateEnrollmentCryptoField updateEnrollmentCryptoFieldModel = new UpdateEnrollmentCryptoField.Builder()
-    .component(cryptoEnrollmentComponentModel)
-    .ca(updateEnrollmentCryptoFieldCaModel)
-    .tlsca(updateEnrollmentCryptoFieldTlscaModel)
-    .build();
+        .component(cryptoEnrollmentComponentModel).ca(updateEnrollmentCryptoFieldCaModel)
+        .tlsca(updateEnrollmentCryptoFieldTlscaModel).build();
 
     // Construct an instance of the UpdateMspCryptoFieldCa model
     UpdateMspCryptoFieldCa updateMspCryptoFieldCaModel = new UpdateMspCryptoFieldCa.Builder()
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the UpdateMspCryptoFieldTlsca model
     UpdateMspCryptoFieldTlsca updateMspCryptoFieldTlscaModel = new UpdateMspCryptoFieldTlsca.Builder()
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the ClientAuth model
-    ClientAuth clientAuthModel = new ClientAuth.Builder()
-    .type("noclientcert")
-    .tlsCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+    ClientAuth clientAuthModel = new ClientAuth.Builder().type("noclientcert")
+        .tlsCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the UpdateMspCryptoFieldComponent model
     UpdateMspCryptoFieldComponent updateMspCryptoFieldComponentModel = new UpdateMspCryptoFieldComponent.Builder()
-    .ekey("testString")
-    .ecert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .tlsKey("testString")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .clientAuth(clientAuthModel)
-    .build();
+        .ekey("testString")
+        .ecert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .tlsKey("testString")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .clientAuth(clientAuthModel).build();
 
     // Construct an instance of the UpdateMspCryptoField model
-    UpdateMspCryptoField updateMspCryptoFieldModel = new UpdateMspCryptoField.Builder()
-    .ca(updateMspCryptoFieldCaModel)
-    .tlsca(updateMspCryptoFieldTlscaModel)
-    .component(updateMspCryptoFieldComponentModel)
-    .build();
+    UpdateMspCryptoField updateMspCryptoFieldModel = new UpdateMspCryptoField.Builder().ca(updateMspCryptoFieldCaModel)
+        .tlsca(updateMspCryptoFieldTlscaModel).component(updateMspCryptoFieldComponentModel).build();
 
     // Construct an instance of the UpdatePeerBodyCrypto model
     UpdatePeerBodyCrypto updatePeerBodyCryptoModel = new UpdatePeerBodyCrypto.Builder()
-    .enrollment(updateEnrollmentCryptoFieldModel)
-    .msp(updateMspCryptoFieldModel)
-    .build();
+        .enrollment(updateEnrollmentCryptoFieldModel).msp(updateMspCryptoFieldModel).build();
 
     // Construct an instance of the NodeOu model
-    NodeOu nodeOuModel = new NodeOu.Builder()
-    .enabled(true)
-    .build();
+    NodeOu nodeOuModel = new NodeOu.Builder().enabled(true).build();
 
     // Construct an instance of the ResourceRequests model
-    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceLimits model
-    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceObjectFabV2 model
-    ResourceObjectFabV2 resourceObjectFabV2Model = new ResourceObjectFabV2.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+    ResourceObjectFabV2 resourceObjectFabV2Model = new ResourceObjectFabV2.Builder().requests(resourceRequestsModel)
+        .limits(resourceLimitsModel).build();
 
     // Construct an instance of the ResourceObjectCouchDb model
     ResourceObjectCouchDb resourceObjectCouchDbModel = new ResourceObjectCouchDb.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+        .requests(resourceRequestsModel).limits(resourceLimitsModel).build();
 
     // Construct an instance of the ResourceObject model
-    ResourceObject resourceObjectModel = new ResourceObject.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+    ResourceObject resourceObjectModel = new ResourceObject.Builder().requests(resourceRequestsModel)
+        .limits(resourceLimitsModel).build();
 
     // Construct an instance of the ResourceObjectFabV1 model
-    ResourceObjectFabV1 resourceObjectFabV1Model = new ResourceObjectFabV1.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+    ResourceObjectFabV1 resourceObjectFabV1Model = new ResourceObjectFabV1.Builder().requests(resourceRequestsModel)
+        .limits(resourceLimitsModel).build();
 
     // Construct an instance of the PeerResources model
-    PeerResources peerResourcesModel = new PeerResources.Builder()
-    .chaincodelauncher(resourceObjectFabV2Model)
-    .couchdb(resourceObjectCouchDbModel)
-    .statedb(resourceObjectModel)
-    .dind(resourceObjectFabV1Model)
-    .fluentd(resourceObjectFabV1Model)
-    .peer(resourceObjectModel)
-    .proxy(resourceObjectModel)
-    .build();
+    PeerResources peerResourcesModel = new PeerResources.Builder().chaincodelauncher(resourceObjectFabV2Model)
+        .couchdb(resourceObjectCouchDbModel).statedb(resourceObjectModel).dind(resourceObjectFabV1Model)
+        .fluentd(resourceObjectFabV1Model).peer(resourceObjectModel).proxy(resourceObjectModel).build();
 
     // Construct an instance of the UpdatePeerOptions model
-    UpdatePeerOptions updatePeerOptionsModel = new UpdatePeerOptions.Builder()
-    .id("testString")
-    .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .configOverride(configPeerUpdateModel)
-    .crypto(updatePeerBodyCryptoModel)
-    .nodeOu(nodeOuModel)
-    .replicas(Double.valueOf("1"))
-    .resources(peerResourcesModel)
-    .version("1.4.6-1")
-    .zone("-")
-    .build();
+    UpdatePeerOptions updatePeerOptionsModel = new UpdatePeerOptions.Builder().id("testString")
+        .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .configOverride(configPeerUpdateModel).crypto(updatePeerBodyCryptoModel).nodeOu(nodeOuModel)
+        .replicas(Double.valueOf("1")).resources(peerResourcesModel).version("1.4.6-1").zone("-").build();
 
     // Invoke operation with valid options model (positive test)
     Response<PeerResponse> response = blockchainService.updatePeer(updatePeerOptionsModel).execute();
@@ -2351,208 +1747,138 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"api_url\": \"grpcs://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050\", \"display_name\": \"orderer\", \"grpcwp_url\": \"https://n3a3ec3-myorderer-proxy.ibp.us-south.containers.appdomain.cloud:443\", \"location\": \"ibmcloud\", \"operations_url\": \"https://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:8443\", \"orderer_type\": \"raft\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"consenter_proposal_fin\": true, \"node_ou\": {\"enabled\": true}, \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"resources\": {\"orderer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"storage\": {\"orderer\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"system_channel_id\": \"testchainid\", \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"type\": \"fabric-peer\", \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String createOrdererPath = "/ak/api/v3/kubernetes/components/fabric-orderer";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the CryptoEnrollmentComponent model
     CryptoEnrollmentComponent cryptoEnrollmentComponentModel = new CryptoEnrollmentComponent.Builder()
-    .admincerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+        .admincerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the CryptoObjectEnrollmentCa model
     CryptoObjectEnrollmentCa cryptoObjectEnrollmentCaModel = new CryptoObjectEnrollmentCa.Builder()
-    .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud")
-    .port(Double.valueOf("7054"))
-    .name("ca")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .enrollId("admin")
-    .enrollSecret("password")
-    .build();
+        .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud").port(Double.valueOf("7054")).name("ca")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .enrollId("admin").enrollSecret("password").build();
 
     // Construct an instance of the CryptoObjectEnrollmentTlsca model
     CryptoObjectEnrollmentTlsca cryptoObjectEnrollmentTlscaModel = new CryptoObjectEnrollmentTlsca.Builder()
-    .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud")
-    .port(Double.valueOf("7054"))
-    .name("tlsca")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .enrollId("admin")
-    .enrollSecret("password")
-    .csrHosts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+        .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud").port(Double.valueOf("7054")).name("tlsca")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .enrollId("admin").enrollSecret("password")
+        .csrHosts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the CryptoObjectEnrollment model
     CryptoObjectEnrollment cryptoObjectEnrollmentModel = new CryptoObjectEnrollment.Builder()
-    .component(cryptoEnrollmentComponentModel)
-    .ca(cryptoObjectEnrollmentCaModel)
-    .tlsca(cryptoObjectEnrollmentTlscaModel)
-    .build();
+        .component(cryptoEnrollmentComponentModel).ca(cryptoObjectEnrollmentCaModel)
+        .tlsca(cryptoObjectEnrollmentTlscaModel).build();
 
     // Construct an instance of the ClientAuth model
-    ClientAuth clientAuthModel = new ClientAuth.Builder()
-    .type("noclientcert")
-    .tlsCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+    ClientAuth clientAuthModel = new ClientAuth.Builder().type("noclientcert")
+        .tlsCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the MspCryptoComp model
-    MspCryptoComp mspCryptoCompModel = new MspCryptoComp.Builder()
-    .ekey("testString")
-    .ecert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .tlsKey("testString")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .clientAuth(clientAuthModel)
-    .build();
+    MspCryptoComp mspCryptoCompModel = new MspCryptoComp.Builder().ekey("testString").ecert(
+        "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .tlsKey("testString")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .clientAuth(clientAuthModel).build();
 
     // Construct an instance of the MspCryptoCa model
     MspCryptoCa mspCryptoCaModel = new MspCryptoCa.Builder()
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the CryptoObjectMsp model
-    CryptoObjectMsp cryptoObjectMspModel = new CryptoObjectMsp.Builder()
-    .component(mspCryptoCompModel)
-    .ca(mspCryptoCaModel)
-    .tlsca(mspCryptoCaModel)
-    .build();
+    CryptoObjectMsp cryptoObjectMspModel = new CryptoObjectMsp.Builder().component(mspCryptoCompModel)
+        .ca(mspCryptoCaModel).tlsca(mspCryptoCaModel).build();
 
     // Construct an instance of the CryptoObject model
-    CryptoObject cryptoObjectModel = new CryptoObject.Builder()
-    .enrollment(cryptoObjectEnrollmentModel)
-    .msp(cryptoObjectMspModel)
-    .build();
+    CryptoObject cryptoObjectModel = new CryptoObject.Builder().enrollment(cryptoObjectEnrollmentModel)
+        .msp(cryptoObjectMspModel).build();
 
     // Construct an instance of the ConfigOrdererKeepalive model
-    ConfigOrdererKeepalive configOrdererKeepaliveModel = new ConfigOrdererKeepalive.Builder()
-    .serverMinInterval("60s")
-    .serverInterval("2h")
-    .serverTimeout("20s")
-    .build();
+    ConfigOrdererKeepalive configOrdererKeepaliveModel = new ConfigOrdererKeepalive.Builder().serverMinInterval("60s")
+        .serverInterval("2h").serverTimeout("20s").build();
 
     // Construct an instance of the BccspSW model
-    BccspSW bccspSwModel = new BccspSW.Builder()
-    .hash("SHA2")
-    .security(Double.valueOf("256"))
-    .build();
+    BccspSW bccspSwModel = new BccspSW.Builder().hash("SHA2").security(Double.valueOf("256")).build();
 
     // Construct an instance of the BccspPKCS11 model
-    BccspPKCS11 bccspPkcS11Model = new BccspPKCS11.Builder()
-    .label("testString")
-    .pin("testString")
-    .hash("SHA2")
-    .security(Double.valueOf("256"))
-    .build();
+    BccspPKCS11 bccspPkcS11Model = new BccspPKCS11.Builder().label("testString").pin("testString").hash("SHA2")
+        .security(Double.valueOf("256")).build();
 
     // Construct an instance of the Bccsp model
-    Bccsp bccspModel = new Bccsp.Builder()
-    .xDefault("SW")
-    .sw(bccspSwModel)
-    .pkcS11(bccspPkcS11Model)
-    .build();
+    Bccsp bccspModel = new Bccsp.Builder().xDefault("SW").sw(bccspSwModel).pkcS11(bccspPkcS11Model).build();
 
     // Construct an instance of the ConfigOrdererAuthentication model
     ConfigOrdererAuthentication configOrdererAuthenticationModel = new ConfigOrdererAuthentication.Builder()
-    .timeWindow("15m")
-    .noExpirationChecks(false)
-    .build();
+        .timeWindow("15m").noExpirationChecks(false).build();
 
     // Construct an instance of the ConfigOrdererGeneral model
     ConfigOrdererGeneral configOrdererGeneralModel = new ConfigOrdererGeneral.Builder()
-    .keepalive(configOrdererKeepaliveModel)
-    .bccsp(bccspModel)
-    .authentication(configOrdererAuthenticationModel)
-    .build();
+        .keepalive(configOrdererKeepaliveModel).bccsp(bccspModel).authentication(configOrdererAuthenticationModel)
+        .build();
 
     // Construct an instance of the ConfigOrdererDebug model
-    ConfigOrdererDebug configOrdererDebugModel = new ConfigOrdererDebug.Builder()
-    .broadcastTraceDir("testString")
-    .deliverTraceDir("testString")
-    .build();
+    ConfigOrdererDebug configOrdererDebugModel = new ConfigOrdererDebug.Builder().broadcastTraceDir("testString")
+        .deliverTraceDir("testString").build();
 
     // Construct an instance of the ConfigOrdererMetricsStatsd model
-    ConfigOrdererMetricsStatsd configOrdererMetricsStatsdModel = new ConfigOrdererMetricsStatsd.Builder()
-    .network("udp")
-    .address("127.0.0.1:8125")
-    .writeInterval("10s")
-    .prefix("server")
-    .build();
+    ConfigOrdererMetricsStatsd configOrdererMetricsStatsdModel = new ConfigOrdererMetricsStatsd.Builder().network("udp")
+        .address("127.0.0.1:8125").writeInterval("10s").prefix("server").build();
 
     // Construct an instance of the ConfigOrdererMetrics model
-    ConfigOrdererMetrics configOrdererMetricsModel = new ConfigOrdererMetrics.Builder()
-    .provider("disabled")
-    .statsd(configOrdererMetricsStatsdModel)
-    .build();
+    ConfigOrdererMetrics configOrdererMetricsModel = new ConfigOrdererMetrics.Builder().provider("disabled")
+        .statsd(configOrdererMetricsStatsdModel).build();
 
     // Construct an instance of the ConfigOrdererCreate model
-    ConfigOrdererCreate configOrdererCreateModel = new ConfigOrdererCreate.Builder()
-    .general(configOrdererGeneralModel)
-    .debug(configOrdererDebugModel)
-    .metrics(configOrdererMetricsModel)
-    .build();
+    ConfigOrdererCreate configOrdererCreateModel = new ConfigOrdererCreate.Builder().general(configOrdererGeneralModel)
+        .debug(configOrdererDebugModel).metrics(configOrdererMetricsModel).build();
 
     // Construct an instance of the ResourceRequests model
-    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceLimits model
-    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceObject model
-    ResourceObject resourceObjectModel = new ResourceObject.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+    ResourceObject resourceObjectModel = new ResourceObject.Builder().requests(resourceRequestsModel)
+        .limits(resourceLimitsModel).build();
 
     // Construct an instance of the CreateOrdererRaftBodyResources model
     CreateOrdererRaftBodyResources createOrdererRaftBodyResourcesModel = new CreateOrdererRaftBodyResources.Builder()
-    .orderer(resourceObjectModel)
-    .proxy(resourceObjectModel)
-    .build();
+        .orderer(resourceObjectModel).proxy(resourceObjectModel).build();
 
     // Construct an instance of the StorageObject model
-    StorageObject storageObjectModel = new StorageObject.Builder()
-    .size("4GiB")
-    .xClass("default")
-    .build();
+    StorageObject storageObjectModel = new StorageObject.Builder().size("4GiB").xClass("default").build();
 
     // Construct an instance of the CreateOrdererRaftBodyStorage model
     CreateOrdererRaftBodyStorage createOrdererRaftBodyStorageModel = new CreateOrdererRaftBodyStorage.Builder()
-    .orderer(storageObjectModel)
-    .build();
+        .orderer(storageObjectModel).build();
 
     // Construct an instance of the Hsm model
-    Hsm hsmModel = new Hsm.Builder()
-    .pkcs11endpoint("tcp://example.com:666")
-    .build();
+    Hsm hsmModel = new Hsm.Builder().pkcs11endpoint("tcp://example.com:666").build();
 
     // Construct an instance of the CreateOrdererOptions model
-    CreateOrdererOptions createOrdererOptionsModel = new CreateOrdererOptions.Builder()
-    .ordererType("raft")
-    .mspId("Org1")
-    .displayName("orderer")
-    .crypto(new java.util.ArrayList<CryptoObject>(java.util.Arrays.asList(cryptoObjectModel)))
-    .clusterName("ordering service 1")
-    .clusterId("abcde")
-    .externalAppend("false")
-    .configOverride(new java.util.ArrayList<ConfigOrdererCreate>(java.util.Arrays.asList(configOrdererCreateModel)))
-    .resources(createOrdererRaftBodyResourcesModel)
-    .storage(createOrdererRaftBodyStorageModel)
-    .systemChannelId("testchainid")
-    .zone(new java.util.ArrayList<String>(java.util.Arrays.asList("-")))
-    .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
-    .region(new java.util.ArrayList<String>(java.util.Arrays.asList("-")))
-    .hsm(hsmModel)
-    .version("1.4.6-1")
-    .build();
+    CreateOrdererOptions createOrdererOptionsModel = new CreateOrdererOptions.Builder().ordererType("raft")
+        .mspId("Org1").displayName("orderer")
+        .crypto(new java.util.ArrayList<CryptoObject>(java.util.Arrays.asList(cryptoObjectModel)))
+        .clusterName("ordering service 1").clusterId("abcde").externalAppend("false")
+        .configOverride(new java.util.ArrayList<ConfigOrdererCreate>(java.util.Arrays.asList(configOrdererCreateModel)))
+        .resources(createOrdererRaftBodyResourcesModel).storage(createOrdererRaftBodyStorageModel)
+        .systemChannelId("testchainid").zone(new java.util.ArrayList<String>(java.util.Arrays.asList("-")))
+        .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
+        .region(new java.util.ArrayList<String>(java.util.Arrays.asList("-"))).hsm(hsmModel).version("1.4.6-1").build();
 
     // Invoke operation with valid options model (positive test)
     Response<OrdererResponse> response = blockchainService.createOrderer(createOrdererOptionsModel).execute();
@@ -2592,53 +1918,45 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"api_url\": \"grpcs://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050\", \"display_name\": \"orderer\", \"grpcwp_url\": \"https://n3a3ec3-myorderer-proxy.ibp.us-south.containers.appdomain.cloud:443\", \"location\": \"ibmcloud\", \"operations_url\": \"https://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:8443\", \"orderer_type\": \"raft\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"consenter_proposal_fin\": true, \"node_ou\": {\"enabled\": true}, \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"resources\": {\"orderer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"storage\": {\"orderer\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"system_channel_id\": \"testchainid\", \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"type\": \"fabric-peer\", \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String importOrdererPath = "/ak/api/v3/components/fabric-orderer";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the MspCryptoFieldCa model
-    MspCryptoFieldCa mspCryptoFieldCaModel = new MspCryptoFieldCa.Builder()
-    .name("ca")
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    MspCryptoFieldCa mspCryptoFieldCaModel = new MspCryptoFieldCa.Builder().name("ca")
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the MspCryptoFieldTlsca model
-    MspCryptoFieldTlsca mspCryptoFieldTlscaModel = new MspCryptoFieldTlsca.Builder()
-    .name("tlsca")
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    MspCryptoFieldTlsca mspCryptoFieldTlscaModel = new MspCryptoFieldTlsca.Builder().name("tlsca")
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the MspCryptoFieldComponent model
-    MspCryptoFieldComponent mspCryptoFieldComponentModel = new MspCryptoFieldComponent.Builder()
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .ecert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    MspCryptoFieldComponent mspCryptoFieldComponentModel = new MspCryptoFieldComponent.Builder().tlsCert(
+        "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .ecert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the MspCryptoField model
-    MspCryptoField mspCryptoFieldModel = new MspCryptoField.Builder()
-    .ca(mspCryptoFieldCaModel)
-    .tlsca(mspCryptoFieldTlscaModel)
-    .component(mspCryptoFieldComponentModel)
-    .build();
+    MspCryptoField mspCryptoFieldModel = new MspCryptoField.Builder().ca(mspCryptoFieldCaModel)
+        .tlsca(mspCryptoFieldTlscaModel).component(mspCryptoFieldComponentModel).build();
 
     // Construct an instance of the ImportOrdererOptions model
     ImportOrdererOptions importOrdererOptionsModel = new ImportOrdererOptions.Builder()
-    .clusterName("ordering service 1")
-    .displayName("orderer")
-    .grpcwpUrl("https://n3a3ec3-myorderer-proxy.ibp.us-south.containers.appdomain.cloud:443")
-    .msp(mspCryptoFieldModel)
-    .mspId("Org1")
-    .apiUrl("grpcs://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050")
-    .clusterId("testString")
-    .location("ibmcloud")
-    .operationsUrl("https://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:8443")
-    .systemChannelId("testchainid")
-    .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
-    .build();
+        .clusterName("ordering service 1").displayName("orderer")
+        .grpcwpUrl("https://n3a3ec3-myorderer-proxy.ibp.us-south.containers.appdomain.cloud:443")
+        .msp(mspCryptoFieldModel).mspId("Org1")
+        .apiUrl("grpcs://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050").clusterId("testString")
+        .location("ibmcloud").operationsUrl("https://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:8443")
+        .systemChannelId("testchainid").tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
+        .build();
 
     // Invoke operation with valid options model (positive test)
     Response<OrdererResponse> response = blockchainService.importOrderer(importOrdererOptionsModel).execute();
@@ -2678,27 +1996,19 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"api_url\": \"grpcs://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050\", \"display_name\": \"orderer\", \"grpcwp_url\": \"https://n3a3ec3-myorderer-proxy.ibp.us-south.containers.appdomain.cloud:443\", \"location\": \"ibmcloud\", \"operations_url\": \"https://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:8443\", \"orderer_type\": \"raft\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"consenter_proposal_fin\": true, \"node_ou\": {\"enabled\": true}, \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"resources\": {\"orderer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"storage\": {\"orderer\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"system_channel_id\": \"testchainid\", \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"type\": \"fabric-peer\", \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String editOrdererPath = "/ak/api/v3/components/fabric-orderer/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the EditOrdererOptions model
-    EditOrdererOptions editOrdererOptionsModel = new EditOrdererOptions.Builder()
-    .id("testString")
-    .clusterName("ordering service 1")
-    .displayName("orderer")
-    .apiUrl("grpcs://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050")
-    .operationsUrl("https://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:8443")
-    .grpcwpUrl("https://n3a3ec3-myorderer-proxy.ibp.us-south.containers.appdomain.cloud:443")
-    .mspId("Org1")
-    .consenterProposalFin(true)
-    .location("ibmcloud")
-    .systemChannelId("testchainid")
-    .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca")))
-    .build();
+    EditOrdererOptions editOrdererOptionsModel = new EditOrdererOptions.Builder().id("testString")
+        .clusterName("ordering service 1").displayName("orderer")
+        .apiUrl("grpcs://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050")
+        .operationsUrl("https://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:8443")
+        .grpcwpUrl("https://n3a3ec3-myorderer-proxy.ibp.us-south.containers.appdomain.cloud:443").mspId("Org1")
+        .consenterProposalFin(true).location("ibmcloud").systemChannelId("testchainid")
+        .tags(new java.util.ArrayList<String>(java.util.Arrays.asList("fabric-ca"))).build();
 
     // Invoke operation with valid options model (positive test)
     Response<OrdererResponse> response = blockchainService.editOrderer(editOrdererOptionsModel).execute();
@@ -2738,32 +2048,20 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"accepted\", \"id\": \"myca\", \"actions\": [\"restart\"]}";
     String ordererActionPath = "/ak/api/v3/kubernetes/components/fabric-orderer/testString/actions";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(202)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(202)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ActionReenroll model
-    ActionReenroll actionReenrollModel = new ActionReenroll.Builder()
-    .tlsCert(true)
-    .ecert(true)
-    .build();
+    ActionReenroll actionReenrollModel = new ActionReenroll.Builder().tlsCert(true).ecert(true).build();
 
     // Construct an instance of the ActionEnroll model
-    ActionEnroll actionEnrollModel = new ActionEnroll.Builder()
-    .tlsCert(true)
-    .ecert(true)
-    .build();
+    ActionEnroll actionEnrollModel = new ActionEnroll.Builder().tlsCert(true).ecert(true).build();
 
     // Construct an instance of the OrdererActionOptions model
-    OrdererActionOptions ordererActionOptionsModel = new OrdererActionOptions.Builder()
-    .id("testString")
-    .restart(true)
-    .reenroll(actionReenrollModel)
-    .enroll(actionEnrollModel)
-    .build();
+    OrdererActionOptions ordererActionOptionsModel = new OrdererActionOptions.Builder().id("testString").restart(true)
+        .reenroll(actionReenrollModel).enroll(actionEnrollModel).build();
 
     // Invoke operation with valid options model (positive test)
     Response<ActionsResponse> response = blockchainService.ordererAction(ordererActionOptionsModel).execute();
@@ -2803,174 +2101,125 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"dep_component_id\": \"admin\", \"api_url\": \"grpcs://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:7050\", \"display_name\": \"orderer\", \"grpcwp_url\": \"https://n3a3ec3-myorderer-proxy.ibp.us-south.containers.appdomain.cloud:443\", \"location\": \"ibmcloud\", \"operations_url\": \"https://n3a3ec3-myorderer.ibp.us-south.containers.appdomain.cloud:8443\", \"orderer_type\": \"raft\", \"config_override\": {\"mapKey\": \"anyValue\"}, \"consenter_proposal_fin\": true, \"node_ou\": {\"enabled\": true}, \"msp\": {\"ca\": {\"name\": \"ca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"tlsca\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"resources\": {\"orderer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"storage\": {\"orderer\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"system_channel_id\": \"testchainid\", \"tags\": [\"fabric-ca\"], \"timestamp\": 1537262855753, \"type\": \"fabric-peer\", \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String updateOrdererPath = "/ak/api/v3/kubernetes/components/fabric-orderer/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ConfigOrdererKeepalive model
-    ConfigOrdererKeepalive configOrdererKeepaliveModel = new ConfigOrdererKeepalive.Builder()
-    .serverMinInterval("60s")
-    .serverInterval("2h")
-    .serverTimeout("20s")
-    .build();
+    ConfigOrdererKeepalive configOrdererKeepaliveModel = new ConfigOrdererKeepalive.Builder().serverMinInterval("60s")
+        .serverInterval("2h").serverTimeout("20s").build();
 
     // Construct an instance of the ConfigOrdererAuthentication model
     ConfigOrdererAuthentication configOrdererAuthenticationModel = new ConfigOrdererAuthentication.Builder()
-    .timeWindow("15m")
-    .noExpirationChecks(false)
-    .build();
+        .timeWindow("15m").noExpirationChecks(false).build();
 
     // Construct an instance of the ConfigOrdererGeneralUpdate model
     ConfigOrdererGeneralUpdate configOrdererGeneralUpdateModel = new ConfigOrdererGeneralUpdate.Builder()
-    .keepalive(configOrdererKeepaliveModel)
-    .authentication(configOrdererAuthenticationModel)
-    .build();
+        .keepalive(configOrdererKeepaliveModel).authentication(configOrdererAuthenticationModel).build();
 
     // Construct an instance of the ConfigOrdererDebug model
-    ConfigOrdererDebug configOrdererDebugModel = new ConfigOrdererDebug.Builder()
-    .broadcastTraceDir("testString")
-    .deliverTraceDir("testString")
-    .build();
+    ConfigOrdererDebug configOrdererDebugModel = new ConfigOrdererDebug.Builder().broadcastTraceDir("testString")
+        .deliverTraceDir("testString").build();
 
     // Construct an instance of the ConfigOrdererMetricsStatsd model
-    ConfigOrdererMetricsStatsd configOrdererMetricsStatsdModel = new ConfigOrdererMetricsStatsd.Builder()
-    .network("udp")
-    .address("127.0.0.1:8125")
-    .writeInterval("10s")
-    .prefix("server")
-    .build();
+    ConfigOrdererMetricsStatsd configOrdererMetricsStatsdModel = new ConfigOrdererMetricsStatsd.Builder().network("udp")
+        .address("127.0.0.1:8125").writeInterval("10s").prefix("server").build();
 
     // Construct an instance of the ConfigOrdererMetrics model
-    ConfigOrdererMetrics configOrdererMetricsModel = new ConfigOrdererMetrics.Builder()
-    .provider("disabled")
-    .statsd(configOrdererMetricsStatsdModel)
-    .build();
+    ConfigOrdererMetrics configOrdererMetricsModel = new ConfigOrdererMetrics.Builder().provider("disabled")
+        .statsd(configOrdererMetricsStatsdModel).build();
 
     // Construct an instance of the ConfigOrdererUpdate model
     ConfigOrdererUpdate configOrdererUpdateModel = new ConfigOrdererUpdate.Builder()
-    .general(configOrdererGeneralUpdateModel)
-    .debug(configOrdererDebugModel)
-    .metrics(configOrdererMetricsModel)
-    .build();
+        .general(configOrdererGeneralUpdateModel).debug(configOrdererDebugModel).metrics(configOrdererMetricsModel)
+        .build();
 
     // Construct an instance of the CryptoEnrollmentComponent model
     CryptoEnrollmentComponent cryptoEnrollmentComponentModel = new CryptoEnrollmentComponent.Builder()
-    .admincerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+        .admincerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Construct an instance of the UpdateEnrollmentCryptoFieldCa model
     UpdateEnrollmentCryptoFieldCa updateEnrollmentCryptoFieldCaModel = new UpdateEnrollmentCryptoFieldCa.Builder()
-    .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud")
-    .port(Double.valueOf("7054"))
-    .name("ca")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .enrollId("admin")
-    .enrollSecret("password")
-    .build();
+        .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud").port(Double.valueOf("7054")).name("ca")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .enrollId("admin").enrollSecret("password").build();
 
     // Construct an instance of the UpdateEnrollmentCryptoFieldTlsca model
     UpdateEnrollmentCryptoFieldTlsca updateEnrollmentCryptoFieldTlscaModel = new UpdateEnrollmentCryptoFieldTlsca.Builder()
-    .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud")
-    .port(Double.valueOf("7054"))
-    .name("tlsca")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .enrollId("admin")
-    .enrollSecret("password")
-    .csrHosts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+        .host("n3a3ec3-myca.ibp.us-south.containers.appdomain.cloud").port(Double.valueOf("7054")).name("tlsca")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .enrollId("admin").enrollSecret("password")
+        .csrHosts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the UpdateEnrollmentCryptoField model
     UpdateEnrollmentCryptoField updateEnrollmentCryptoFieldModel = new UpdateEnrollmentCryptoField.Builder()
-    .component(cryptoEnrollmentComponentModel)
-    .ca(updateEnrollmentCryptoFieldCaModel)
-    .tlsca(updateEnrollmentCryptoFieldTlscaModel)
-    .build();
+        .component(cryptoEnrollmentComponentModel).ca(updateEnrollmentCryptoFieldCaModel)
+        .tlsca(updateEnrollmentCryptoFieldTlscaModel).build();
 
     // Construct an instance of the UpdateMspCryptoFieldCa model
     UpdateMspCryptoFieldCa updateMspCryptoFieldCaModel = new UpdateMspCryptoFieldCa.Builder()
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the UpdateMspCryptoFieldTlsca model
     UpdateMspCryptoFieldTlsca updateMspCryptoFieldTlscaModel = new UpdateMspCryptoFieldTlsca.Builder()
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .caIntermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the ClientAuth model
-    ClientAuth clientAuthModel = new ClientAuth.Builder()
-    .type("noclientcert")
-    .tlsCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString")))
-    .build();
+    ClientAuth clientAuthModel = new ClientAuth.Builder().type("noclientcert")
+        .tlsCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("testString"))).build();
 
     // Construct an instance of the UpdateMspCryptoFieldComponent model
     UpdateMspCryptoFieldComponent updateMspCryptoFieldComponentModel = new UpdateMspCryptoFieldComponent.Builder()
-    .ekey("testString")
-    .ecert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .tlsKey("testString")
-    .tlsCert("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
-    .clientAuth(clientAuthModel)
-    .build();
+        .ekey("testString")
+        .ecert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .tlsKey("testString")
+        .tlsCert(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")
+        .clientAuth(clientAuthModel).build();
 
     // Construct an instance of the UpdateMspCryptoField model
-    UpdateMspCryptoField updateMspCryptoFieldModel = new UpdateMspCryptoField.Builder()
-    .ca(updateMspCryptoFieldCaModel)
-    .tlsca(updateMspCryptoFieldTlscaModel)
-    .component(updateMspCryptoFieldComponentModel)
-    .build();
+    UpdateMspCryptoField updateMspCryptoFieldModel = new UpdateMspCryptoField.Builder().ca(updateMspCryptoFieldCaModel)
+        .tlsca(updateMspCryptoFieldTlscaModel).component(updateMspCryptoFieldComponentModel).build();
 
     // Construct an instance of the UpdateOrdererBodyCrypto model
     UpdateOrdererBodyCrypto updateOrdererBodyCryptoModel = new UpdateOrdererBodyCrypto.Builder()
-    .enrollment(updateEnrollmentCryptoFieldModel)
-    .msp(updateMspCryptoFieldModel)
-    .build();
+        .enrollment(updateEnrollmentCryptoFieldModel).msp(updateMspCryptoFieldModel).build();
 
     // Construct an instance of the NodeOu model
-    NodeOu nodeOuModel = new NodeOu.Builder()
-    .enabled(true)
-    .build();
+    NodeOu nodeOuModel = new NodeOu.Builder().enabled(true).build();
 
     // Construct an instance of the ResourceRequests model
-    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceRequests resourceRequestsModel = new ResourceRequests.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceLimits model
-    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder()
-    .cpu("100m")
-    .memory("256MiB")
-    .build();
+    ResourceLimits resourceLimitsModel = new ResourceLimits.Builder().cpu("100m").memory("256MiB").build();
 
     // Construct an instance of the ResourceObject model
-    ResourceObject resourceObjectModel = new ResourceObject.Builder()
-    .requests(resourceRequestsModel)
-    .limits(resourceLimitsModel)
-    .build();
+    ResourceObject resourceObjectModel = new ResourceObject.Builder().requests(resourceRequestsModel)
+        .limits(resourceLimitsModel).build();
 
     // Construct an instance of the UpdateOrdererBodyResources model
     UpdateOrdererBodyResources updateOrdererBodyResourcesModel = new UpdateOrdererBodyResources.Builder()
-    .orderer(resourceObjectModel)
-    .proxy(resourceObjectModel)
-    .build();
+        .orderer(resourceObjectModel).proxy(resourceObjectModel).build();
 
     // Construct an instance of the UpdateOrdererOptions model
-    UpdateOrdererOptions updateOrdererOptionsModel = new UpdateOrdererOptions.Builder()
-    .id("testString")
-    .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .configOverride(configOrdererUpdateModel)
-    .crypto(updateOrdererBodyCryptoModel)
-    .nodeOu(nodeOuModel)
-    .replicas(Double.valueOf("1"))
-    .resources(updateOrdererBodyResourcesModel)
-    .version("1.4.6-1")
-    .zone("-")
-    .build();
+    UpdateOrdererOptions updateOrdererOptionsModel = new UpdateOrdererOptions.Builder().id("testString")
+        .adminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .configOverride(configOrdererUpdateModel).crypto(updateOrdererBodyCryptoModel).nodeOu(nodeOuModel)
+        .replicas(Double.valueOf("1")).resources(updateOrdererBodyResourcesModel).version("1.4.6-1").zone("-").build();
 
     // Invoke operation with valid options model (positive test)
     Response<OrdererResponse> response = blockchainService.updateOrderer(updateOrdererOptionsModel).execute();
@@ -3010,18 +2259,15 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"myca-2\", \"type\": \"fabric-ca\", \"display_name\": \"Example CA\", \"grpcwp_url\": \"https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"operations_url\": \"https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443\", \"msp\": {\"ca\": {\"name\": \"org1CA\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"org1tlsCA\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"location\": \"ibmcloud\", \"node_ou\": {\"enabled\": true}, \"resources\": {\"ca\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"peer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"orderer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"statedb\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"state_db\": \"couchdb\", \"storage\": {\"ca\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"peer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"orderer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"statedb\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"timestamp\": 1537262855753, \"tags\": [\"fabric-ca\"], \"version\": \"1.4.6-1\", \"zone\": \"-\"}";
     String submitBlockPath = "/ak/api/v3/kubernetes/components/testString/config";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the SubmitBlockOptions model
-    SubmitBlockOptions submitBlockOptionsModel = new SubmitBlockOptions.Builder()
-    .id("testString")
-    .b64Block("bWFzc2l2ZSBiaW5hcnkgb2YgYSBjb25maWcgYmxvY2sgd291bGQgYmUgaGVyZSBpZiB0aGlzIHdhcyByZWFsLCBwbGVhc2UgZG9udCBzZW5kIHRoaXM=")
-    .build();
+    SubmitBlockOptions submitBlockOptionsModel = new SubmitBlockOptions.Builder().id("testString").b64Block(
+        "bWFzc2l2ZSBiaW5hcnkgb2YgYSBjb25maWcgYmxvY2sgd291bGQgYmUgaGVyZSBpZiB0aGlzIHdhcyByZWFsLCBwbGVhc2UgZG9udCBzZW5kIHRoaXM=")
+        .build();
 
     // Invoke operation with valid options model (positive test)
     Response<GenericComponentResponse> response = blockchainService.submitBlock(submitBlockOptionsModel).execute();
@@ -3061,22 +2307,22 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"type\": \"fabric-peer\", \"display_name\": \"My Peer\", \"msp_id\": \"Org1\", \"timestamp\": 1537262855753, \"tags\": [\"fabric-ca\"], \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"], \"intermediate_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkRhdGEgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K\"], \"admins\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"], \"scheme_version\": \"v1\", \"tls_root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}";
     String importMspPath = "/ak/api/v3/components/msp";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ImportMspOptions model
-    ImportMspOptions importMspOptionsModel = new ImportMspOptions.Builder()
-    .mspId("Org1")
-    .displayName("My Peer")
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .intermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkRhdGEgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K")))
-    .admins(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .tlsRootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    ImportMspOptions importMspOptionsModel = new ImportMspOptions.Builder().mspId("Org1").displayName("My Peer")
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .intermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkRhdGEgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K")))
+        .admins(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .tlsRootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Invoke operation with valid options model (positive test)
     Response<MspResponse> response = blockchainService.importMsp(importMspOptionsModel).execute();
@@ -3116,23 +2362,23 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"id\": \"component-1\", \"type\": \"fabric-peer\", \"display_name\": \"My Peer\", \"msp_id\": \"Org1\", \"timestamp\": 1537262855753, \"tags\": [\"fabric-ca\"], \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"], \"intermediate_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkRhdGEgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K\"], \"admins\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"], \"scheme_version\": \"v1\", \"tls_root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}";
     String editMspPath = "/ak/api/v3/components/msp/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the EditMspOptions model
-    EditMspOptions editMspOptionsModel = new EditMspOptions.Builder()
-    .id("testString")
-    .mspId("Org1")
-    .displayName("My Peer")
-    .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .intermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkRhdGEgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K")))
-    .admins(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .tlsRootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    EditMspOptions editMspOptionsModel = new EditMspOptions.Builder().id("testString").mspId("Org1")
+        .displayName("My Peer")
+        .rootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .intermediateCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkRhdGEgaGVyZSBpZiB0aGlzIHdhcyByZWFsCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K")))
+        .admins(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .tlsRootCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Invoke operation with valid options model (positive test)
     Response<MspResponse> response = blockchainService.editMsp(editMspOptionsModel).execute();
@@ -3172,21 +2418,18 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"msps\": [{\"msp_id\": \"Org1\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"], \"admins\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"], \"tls_root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}]}";
     String getMspCertificatePath = "/ak/api/v3/components/msps/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the GetMspCertificateOptions model
-    GetMspCertificateOptions getMspCertificateOptionsModel = new GetMspCertificateOptions.Builder()
-    .mspId("testString")
-    .cache("skip")
-    .build();
+    GetMspCertificateOptions getMspCertificateOptionsModel = new GetMspCertificateOptions.Builder().mspId("testString")
+        .cache("skip").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<GetMSPCertificateResponse> response = blockchainService.getMspCertificate(getMspCertificateOptionsModel).execute();
+    Response<GetMSPCertificateResponse> response = blockchainService.getMspCertificate(getMspCertificateOptionsModel)
+        .execute();
     assertNotNull(response);
     GetMSPCertificateResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3224,19 +2467,18 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"changes_made\": 1, \"set_admin_certs\": [{\"base_64_pem\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"issuer\": \"/C=US/ST=North Carolina/O=Hyperledger/OU=Fabric/CN=fabric-ca-server\", \"not_after_ts\": 1597770420000, \"not_before_ts\": 1566234120000, \"serial_number_hex\": \"649a1206fd0bc8be994886dd715cecb0a7a21276\", \"signature_algorithm\": \"SHA256withECDSA\", \"subject\": \"/OU=client/CN=admin\", \"X509_version\": 3, \"time_left\": \"10 hrs\"}]}";
     String editAdminCertsPath = "/ak/api/v3/kubernetes/components/testString/certs";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the EditAdminCertsOptions model
-    EditAdminCertsOptions editAdminCertsOptionsModel = new EditAdminCertsOptions.Builder()
-    .id("testString")
-    .appendAdminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .removeAdminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
-    .build();
+    EditAdminCertsOptions editAdminCertsOptionsModel = new EditAdminCertsOptions.Builder().id("testString")
+        .appendAdminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .removeAdminCerts(new java.util.ArrayList<String>(java.util.Arrays.asList(
+            "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=")))
+        .build();
 
     // Invoke operation with valid options model (positive test)
     Response<EditAdminCertsResponse> response = blockchainService.editAdminCerts(editAdminCertsOptionsModel).execute();
@@ -3276,23 +2518,18 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"components\": [{\"id\": \"myca-2\", \"type\": \"fabric-ca\", \"display_name\": \"Example CA\", \"grpcwp_url\": \"https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"operations_url\": \"https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443\", \"msp\": {\"ca\": {\"name\": \"org1CA\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"org1tlsCA\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"location\": \"ibmcloud\", \"node_ou\": {\"enabled\": true}, \"resources\": {\"ca\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"peer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"orderer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"statedb\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"state_db\": \"couchdb\", \"storage\": {\"ca\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"peer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"orderer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"statedb\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"timestamp\": 1537262855753, \"tags\": [\"fabric-ca\"], \"version\": \"1.4.6-1\", \"zone\": \"-\"}]}";
     String listComponentsPath = "/ak/api/v3/components";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ListComponentsOptions model
-    ListComponentsOptions listComponentsOptionsModel = new ListComponentsOptions.Builder()
-    .deploymentAttrs("included")
-    .parsedCerts("included")
-    .cache("skip")
-    .caAttrs("included")
-    .build();
+    ListComponentsOptions listComponentsOptionsModel = new ListComponentsOptions.Builder().deploymentAttrs("included")
+        .parsedCerts("included").cache("skip").caAttrs("included").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<GetMultiComponentsResponse> response = blockchainService.listComponents(listComponentsOptionsModel).execute();
+    Response<GetMultiComponentsResponse> response = blockchainService.listComponents(listComponentsOptionsModel)
+        .execute();
     assertNotNull(response);
     GetMultiComponentsResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3321,23 +2558,18 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"components\": [{\"id\": \"myca-2\", \"type\": \"fabric-ca\", \"display_name\": \"Example CA\", \"grpcwp_url\": \"https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"operations_url\": \"https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443\", \"msp\": {\"ca\": {\"name\": \"org1CA\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"org1tlsCA\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"location\": \"ibmcloud\", \"node_ou\": {\"enabled\": true}, \"resources\": {\"ca\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"peer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"orderer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"statedb\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"state_db\": \"couchdb\", \"storage\": {\"ca\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"peer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"orderer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"statedb\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"timestamp\": 1537262855753, \"tags\": [\"fabric-ca\"], \"version\": \"1.4.6-1\", \"zone\": \"-\"}]}";
     String getComponentsByTypePath = "/ak/api/v3/components/types/fabric-peer";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the GetComponentsByTypeOptions model
     GetComponentsByTypeOptions getComponentsByTypeOptionsModel = new GetComponentsByTypeOptions.Builder()
-    .type("fabric-peer")
-    .deploymentAttrs("included")
-    .parsedCerts("included")
-    .cache("skip")
-    .build();
+        .type("fabric-peer").deploymentAttrs("included").parsedCerts("included").cache("skip").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<GetMultiComponentsResponse> response = blockchainService.getComponentsByType(getComponentsByTypeOptionsModel).execute();
+    Response<GetMultiComponentsResponse> response = blockchainService
+        .getComponentsByType(getComponentsByTypeOptionsModel).execute();
     assertNotNull(response);
     GetMultiComponentsResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3377,23 +2609,18 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"components\": [{\"id\": \"myca-2\", \"type\": \"fabric-ca\", \"display_name\": \"Example CA\", \"grpcwp_url\": \"https://n3a3ec3-mypeer-proxy.ibp.us-south.containers.appdomain.cloud:8084\", \"api_url\": \"grpcs://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:7051\", \"operations_url\": \"https://n3a3ec3-mypeer.ibp.us-south.containers.appdomain.cloud:9443\", \"msp\": {\"ca\": {\"name\": \"org1CA\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"tlsca\": {\"name\": \"org1tlsCA\", \"root_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}, \"component\": {\"tls_cert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"ecert\": \"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\", \"admin_certs\": [\"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCkNlcnQgZGF0YSB3b3VsZCBiZSBoZXJlIGlmIHRoaXMgd2FzIHJlYWwKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=\"]}}, \"msp_id\": \"Org1\", \"location\": \"ibmcloud\", \"node_ou\": {\"enabled\": true}, \"resources\": {\"ca\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"peer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"orderer\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"proxy\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}, \"statedb\": {\"requests\": {\"cpu\": \"100m\", \"memory\": \"256M\"}, \"limits\": {\"cpu\": \"8000m\", \"memory\": \"16384M\"}}}, \"scheme_version\": \"v1\", \"state_db\": \"couchdb\", \"storage\": {\"ca\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"peer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"orderer\": {\"size\": \"4GiB\", \"class\": \"default\"}, \"statedb\": {\"size\": \"4GiB\", \"class\": \"default\"}}, \"timestamp\": 1537262855753, \"tags\": [\"fabric-ca\"], \"version\": \"1.4.6-1\", \"zone\": \"-\"}]}";
     String getComponentsByTagPath = "/ak/api/v3/components/tags/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the GetComponentsByTagOptions model
-    GetComponentsByTagOptions getComponentsByTagOptionsModel = new GetComponentsByTagOptions.Builder()
-    .tag("testString")
-    .deploymentAttrs("included")
-    .parsedCerts("included")
-    .cache("skip")
-    .build();
+    GetComponentsByTagOptions getComponentsByTagOptionsModel = new GetComponentsByTagOptions.Builder().tag("testString")
+        .deploymentAttrs("included").parsedCerts("included").cache("skip").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<GetMultiComponentsResponse> response = blockchainService.getComponentsByTag(getComponentsByTagOptionsModel).execute();
+    Response<GetMultiComponentsResponse> response = blockchainService.getComponentsByTag(getComponentsByTagOptionsModel)
+        .execute();
     assertNotNull(response);
     GetMultiComponentsResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3433,20 +2660,18 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"removed\": [{\"message\": \"deleted\", \"type\": \"fabric-peer\", \"id\": \"component-1\", \"display_name\": \"My Peer\"}]}";
     String removeComponentsByTagPath = "/ak/api/v3/components/tags/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the RemoveComponentsByTagOptions model
     RemoveComponentsByTagOptions removeComponentsByTagOptionsModel = new RemoveComponentsByTagOptions.Builder()
-    .tag("testString")
-    .build();
+        .tag("testString").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<RemoveMultiComponentsResponse> response = blockchainService.removeComponentsByTag(removeComponentsByTagOptionsModel).execute();
+    Response<RemoveMultiComponentsResponse> response = blockchainService
+        .removeComponentsByTag(removeComponentsByTagOptionsModel).execute();
     assertNotNull(response);
     RemoveMultiComponentsResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3483,20 +2708,18 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"deleted\": [{\"message\": \"deleted\", \"type\": \"fabric-peer\", \"id\": \"component-1\", \"display_name\": \"My Peer\"}]}";
     String deleteComponentsByTagPath = "/ak/api/v3/kubernetes/components/tags/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the DeleteComponentsByTagOptions model
     DeleteComponentsByTagOptions deleteComponentsByTagOptionsModel = new DeleteComponentsByTagOptions.Builder()
-    .tag("testString")
-    .build();
+        .tag("testString").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<DeleteMultiComponentsResponse> response = blockchainService.deleteComponentsByTag(deleteComponentsByTagOptionsModel).execute();
+    Response<DeleteMultiComponentsResponse> response = blockchainService
+        .deleteComponentsByTag(deleteComponentsByTagOptionsModel).execute();
     assertNotNull(response);
     DeleteMultiComponentsResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3533,10 +2756,8 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"deleted\": [{\"message\": \"deleted\", \"type\": \"fabric-peer\", \"id\": \"component-1\", \"display_name\": \"My Peer\"}]}";
     String deleteAllComponentsPath = "/ak/api/v3/kubernetes/components/purge";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
@@ -3544,7 +2765,8 @@ public class BlockchainTest extends PowerMockTestCase {
     DeleteAllComponentsOptions deleteAllComponentsOptionsModel = new DeleteAllComponentsOptions();
 
     // Invoke operation with valid options model (positive test)
-    Response<DeleteMultiComponentsResponse> response = blockchainService.deleteAllComponents(deleteAllComponentsOptionsModel).execute();
+    Response<DeleteMultiComponentsResponse> response = blockchainService
+        .deleteAllComponents(deleteAllComponentsOptionsModel).execute();
     assertNotNull(response);
     DeleteMultiComponentsResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3569,10 +2791,8 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"ACTIVITY_TRACKER_PATH\": \"/logs\", \"ATHENA_ID\": \"17v7e\", \"AUTH_SCHEME\": \"iam\", \"CALLBACK_URI\": \"/auth/cb\", \"CLUSTER_DATA\": {\"type\": \"paid\"}, \"CONFIGTXLATOR_URL\": \"https://n3a3ec3-configtxlator.ibp.us-south.containers.appdomain.cloud\", \"CRN\": {\"account_id\": \"a/abcd\", \"c_name\": \"staging\", \"c_type\": \"public\", \"instance_id\": \"abc123\", \"location\": \"us-south\", \"resource_id\": \"-\", \"resource_type\": \"-\", \"service_name\": \"blockchain\", \"version\": \"v1\"}, \"CRN_STRING\": \"crn:v1:staging:public:blockchain:us-south:a/abcd:abc123::\", \"CSP_HEADER_VALUES\": [\"-\"], \"DB_SYSTEM\": \"system\", \"DEPLOYER_URL\": \"https://api.dev.blockchain.cloud.ibm.com\", \"DOMAIN\": \"localhost\", \"ENVIRONMENT\": \"prod\", \"FABRIC_CAPABILITIES\": {\"application\": [\"V1_1\"], \"channel\": [\"V1_1\"], \"orderer\": [\"V1_1\"]}, \"FEATURE_FLAGS\": {\"mapKey\": \"anyValue\"}, \"FILE_LOGGING\": {\"server\": {\"client\": {\"enabled\": true, \"level\": \"silly\", \"unique_name\": false}, \"server\": {\"enabled\": true, \"level\": \"silly\", \"unique_name\": false}}, \"client\": {\"client\": {\"enabled\": true, \"level\": \"silly\", \"unique_name\": false}, \"server\": {\"enabled\": true, \"level\": \"silly\", \"unique_name\": false}}}, \"HOST_URL\": \"http://localhost:3000\", \"IAM_CACHE_ENABLED\": true, \"IAM_URL\": \"-\", \"IBM_ID_CALLBACK_URL\": \"http://localhost:3000/auth/login\", \"IGNORE_CONFIG_FILE\": true, \"INACTIVITY_TIMEOUTS\": {\"enabled\": true, \"max_idle_time\": 60000}, \"INFRASTRUCTURE\": \"ibmcloud\", \"LANDING_URL\": \"http://localhost:3000\", \"LOGIN_URI\": \"/auth/login\", \"LOGOUT_URI\": \"/auth/logout\", \"MAX_REQ_PER_MIN\": 25, \"MAX_REQ_PER_MIN_AK\": 25, \"MEMORY_CACHE_ENABLED\": true, \"PORT\": \"3000\", \"PROXY_CACHE_ENABLED\": true, \"PROXY_TLS_FABRIC_REQS\": \"always\", \"PROXY_TLS_HTTP_URL\": \"http://localhost:3000\", \"PROXY_TLS_WS_URL\": \"anyValue\", \"REGION\": \"us_south\", \"SESSION_CACHE_ENABLED\": true, \"TIMEOUTS\": {\"mapKey\": \"anyValue\"}, \"TIMESTAMPS\": {\"now\": 1542746836056, \"born\": 1542746836056, \"next_settings_update\": \"1.2 mins\", \"up_time\": \"30 days\"}, \"TRANSACTION_VISIBILITY\": {\"mapKey\": \"anyValue\"}, \"TRUST_PROXY\": \"loopback\", \"TRUST_UNKNOWN_CERTS\": true, \"VERSIONS\": {\"apollo\": \"65f3cbfd\", \"athena\": \"1198f94\", \"stitch\": \"0f1a0c6\", \"tag\": \"v0.4.31\"}}";
     String getSettingsPath = "/ak/api/v3/settings";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
@@ -3605,53 +2825,35 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"ACTIVITY_TRACKER_PATH\": \"/logs\", \"ATHENA_ID\": \"17v7e\", \"AUTH_SCHEME\": \"iam\", \"CALLBACK_URI\": \"/auth/cb\", \"CLUSTER_DATA\": {\"type\": \"paid\"}, \"CONFIGTXLATOR_URL\": \"https://n3a3ec3-configtxlator.ibp.us-south.containers.appdomain.cloud\", \"CRN\": {\"account_id\": \"a/abcd\", \"c_name\": \"staging\", \"c_type\": \"public\", \"instance_id\": \"abc123\", \"location\": \"us-south\", \"resource_id\": \"-\", \"resource_type\": \"-\", \"service_name\": \"blockchain\", \"version\": \"v1\"}, \"CRN_STRING\": \"crn:v1:staging:public:blockchain:us-south:a/abcd:abc123::\", \"CSP_HEADER_VALUES\": [\"-\"], \"DB_SYSTEM\": \"system\", \"DEPLOYER_URL\": \"https://api.dev.blockchain.cloud.ibm.com\", \"DOMAIN\": \"localhost\", \"ENVIRONMENT\": \"prod\", \"FABRIC_CAPABILITIES\": {\"application\": [\"V1_1\"], \"channel\": [\"V1_1\"], \"orderer\": [\"V1_1\"]}, \"FEATURE_FLAGS\": {\"mapKey\": \"anyValue\"}, \"FILE_LOGGING\": {\"server\": {\"client\": {\"enabled\": true, \"level\": \"silly\", \"unique_name\": false}, \"server\": {\"enabled\": true, \"level\": \"silly\", \"unique_name\": false}}, \"client\": {\"client\": {\"enabled\": true, \"level\": \"silly\", \"unique_name\": false}, \"server\": {\"enabled\": true, \"level\": \"silly\", \"unique_name\": false}}}, \"HOST_URL\": \"http://localhost:3000\", \"IAM_CACHE_ENABLED\": true, \"IAM_URL\": \"-\", \"IBM_ID_CALLBACK_URL\": \"http://localhost:3000/auth/login\", \"IGNORE_CONFIG_FILE\": true, \"INACTIVITY_TIMEOUTS\": {\"enabled\": true, \"max_idle_time\": 60000}, \"INFRASTRUCTURE\": \"ibmcloud\", \"LANDING_URL\": \"http://localhost:3000\", \"LOGIN_URI\": \"/auth/login\", \"LOGOUT_URI\": \"/auth/logout\", \"MAX_REQ_PER_MIN\": 25, \"MAX_REQ_PER_MIN_AK\": 25, \"MEMORY_CACHE_ENABLED\": true, \"PORT\": \"3000\", \"PROXY_CACHE_ENABLED\": true, \"PROXY_TLS_FABRIC_REQS\": \"always\", \"PROXY_TLS_HTTP_URL\": \"http://localhost:3000\", \"PROXY_TLS_WS_URL\": \"anyValue\", \"REGION\": \"us_south\", \"SESSION_CACHE_ENABLED\": true, \"TIMEOUTS\": {\"mapKey\": \"anyValue\"}, \"TIMESTAMPS\": {\"now\": 1542746836056, \"born\": 1542746836056, \"next_settings_update\": \"1.2 mins\", \"up_time\": \"30 days\"}, \"TRANSACTION_VISIBILITY\": {\"mapKey\": \"anyValue\"}, \"TRUST_PROXY\": \"loopback\", \"TRUST_UNKNOWN_CERTS\": true, \"VERSIONS\": {\"apollo\": \"65f3cbfd\", \"athena\": \"1198f94\", \"stitch\": \"0f1a0c6\", \"tag\": \"v0.4.31\"}}";
     String editSettingsPath = "/ak/api/v3/settings";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the EditSettingsBodyInactivityTimeouts model
     EditSettingsBodyInactivityTimeouts editSettingsBodyInactivityTimeoutsModel = new EditSettingsBodyInactivityTimeouts.Builder()
-    .enabled(false)
-    .maxIdleTime(Double.valueOf("90000"))
-    .build();
+        .enabled(false).maxIdleTime(Double.valueOf("90000")).build();
 
     // Construct an instance of the LoggingSettingsClient model
-    LoggingSettingsClient loggingSettingsClientModel = new LoggingSettingsClient.Builder()
-    .enabled(true)
-    .level("silly")
-    .uniqueName(false)
-    .build();
+    LoggingSettingsClient loggingSettingsClientModel = new LoggingSettingsClient.Builder().enabled(true).level("silly")
+        .uniqueName(false).build();
 
     // Construct an instance of the LoggingSettingsServer model
-    LoggingSettingsServer loggingSettingsServerModel = new LoggingSettingsServer.Builder()
-    .enabled(true)
-    .level("silly")
-    .uniqueName(false)
-    .build();
+    LoggingSettingsServer loggingSettingsServerModel = new LoggingSettingsServer.Builder().enabled(true).level("silly")
+        .uniqueName(false).build();
 
     // Construct an instance of the EditLogSettingsBody model
-    EditLogSettingsBody editLogSettingsBodyModel = new EditLogSettingsBody.Builder()
-    .client(loggingSettingsClientModel)
-    .server(loggingSettingsServerModel)
-    .build();
+    EditLogSettingsBody editLogSettingsBodyModel = new EditLogSettingsBody.Builder().client(loggingSettingsClientModel)
+        .server(loggingSettingsServerModel).build();
 
     // Construct an instance of the EditSettingsOptions model
     EditSettingsOptions editSettingsOptionsModel = new EditSettingsOptions.Builder()
-    .inactivityTimeouts(editSettingsBodyInactivityTimeoutsModel)
-    .fileLogging(editLogSettingsBodyModel)
-    .maxReqPerMin(Double.valueOf("25"))
-    .maxReqPerMinAk(Double.valueOf("25"))
-    .fabricGetBlockTimeoutMs(Double.valueOf("10000"))
-    .fabricInstantiateTimeoutMs(Double.valueOf("300000"))
-    .fabricJoinChannelTimeoutMs(Double.valueOf("25000"))
-    .fabricInstallCcTimeoutMs(Double.valueOf("300000"))
-    .fabricLcInstallCcTimeoutMs(Double.valueOf("300000"))
-    .fabricLcGetCcTimeoutMs(Double.valueOf("180000"))
-    .fabricGeneralTimeoutMs(Double.valueOf("10000"))
-    .build();
+        .inactivityTimeouts(editSettingsBodyInactivityTimeoutsModel).fileLogging(editLogSettingsBodyModel)
+        .maxReqPerMin(Double.valueOf("25")).maxReqPerMinAk(Double.valueOf("25"))
+        .fabricGetBlockTimeoutMs(Double.valueOf("10000")).fabricInstantiateTimeoutMs(Double.valueOf("300000"))
+        .fabricJoinChannelTimeoutMs(Double.valueOf("25000")).fabricInstallCcTimeoutMs(Double.valueOf("300000"))
+        .fabricLcInstallCcTimeoutMs(Double.valueOf("300000")).fabricLcGetCcTimeoutMs(Double.valueOf("180000"))
+        .fabricGeneralTimeoutMs(Double.valueOf("10000")).build();
 
     // Invoke operation with valid options model (positive test)
     Response<GetPublicSettingsResponse> response = blockchainService.editSettings(editSettingsOptionsModel).execute();
@@ -3679,20 +2881,17 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"versions\": {\"ca\": {\"1.4.6-2\": {\"default\": true, \"version\": \"1.4.6-2\", \"image\": {\"mapKey\": \"anyValue\"}}, \"2.1.0-0\": {\"default\": true, \"version\": \"1.4.6-2\", \"image\": {\"mapKey\": \"anyValue\"}}}, \"peer\": {\"1.4.6-2\": {\"default\": true, \"version\": \"1.4.6-2\", \"image\": {\"mapKey\": \"anyValue\"}}, \"2.1.0-0\": {\"default\": true, \"version\": \"1.4.6-2\", \"image\": {\"mapKey\": \"anyValue\"}}}, \"orderer\": {\"1.4.6-2\": {\"default\": true, \"version\": \"1.4.6-2\", \"image\": {\"mapKey\": \"anyValue\"}}, \"2.1.0-0\": {\"default\": true, \"version\": \"1.4.6-2\", \"image\": {\"mapKey\": \"anyValue\"}}}}}";
     String getFabVersionsPath = "/ak/api/v3/kubernetes/fabric/versions";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the GetFabVersionsOptions model
-    GetFabVersionsOptions getFabVersionsOptionsModel = new GetFabVersionsOptions.Builder()
-    .cache("skip")
-    .build();
+    GetFabVersionsOptions getFabVersionsOptionsModel = new GetFabVersionsOptions.Builder().cache("skip").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<GetFabricVersionsResponse> response = blockchainService.getFabVersions(getFabVersionsOptionsModel).execute();
+    Response<GetFabricVersionsResponse> response = blockchainService.getFabVersions(getFabVersionsOptionsModel)
+        .execute();
     assertNotNull(response);
     GetFabricVersionsResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3718,10 +2917,8 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"OPTOOLS\": {\"instance_id\": \"p59ta\", \"now\": 1542746836056, \"born\": 1542746836056, \"up_time\": \"30 days\", \"memory_usage\": {\"rss\": \"56.1 MB\", \"heapTotal\": \"34.4 MB\", \"heapUsed\": \"28.4 MB\", \"external\": \"369.3 KB\"}, \"session_cache_stats\": {\"hits\": 42, \"misses\": 11, \"keys\": 100, \"cache_size\": \"4.19 KiB\"}, \"couch_cache_stats\": {\"hits\": 42, \"misses\": 11, \"keys\": 100, \"cache_size\": \"4.19 KiB\"}, \"iam_cache_stats\": {\"hits\": 42, \"misses\": 11, \"keys\": 100, \"cache_size\": \"4.19 KiB\"}, \"proxy_cache\": {\"hits\": 42, \"misses\": 11, \"keys\": 100, \"cache_size\": \"4.19 KiB\"}}, \"OS\": {\"arch\": \"x64\", \"type\": \"Windows_NT\", \"endian\": \"LE\", \"loadavg\": [0], \"cpus\": [{\"model\": \"Intel(R) Core(TM) i7-8850H CPU @ 2.60GHz\", \"speed\": 2592, \"times\": {\"idle\": 131397203, \"irq\": 6068640, \"nice\": 0, \"sys\": 9652328, \"user\": 4152187}}], \"total_memory\": \"31.7 GB\", \"free_memory\": \"21.9 GB\", \"up_time\": \"4.9 days\"}}";
     String getHealthPath = "/ak/api/v3/health";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
@@ -3754,22 +2951,18 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"total\": 10, \"returning\": 3, \"notifications\": [{\"id\": \"60d84819bfa17adb4174ff3a1c52b5d6\", \"type\": \"notification\", \"status\": \"pending\", \"by\": \"d******a@us.ibm.com\", \"message\": \"Restarting application\", \"ts_display\": 1537262855753}]}";
     String listNotificationsPath = "/ak/api/v3/notifications";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ListNotificationsOptions model
     ListNotificationsOptions listNotificationsOptionsModel = new ListNotificationsOptions.Builder()
-    .limit(Double.valueOf("1"))
-    .skip(Double.valueOf("1"))
-    .componentId("MyPeer")
-    .build();
+        .limit(Double.valueOf("1")).skip(Double.valueOf("1")).componentId("MyPeer").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<GetNotificationsResponse> response = blockchainService.listNotifications(listNotificationsOptionsModel).execute();
+    Response<GetNotificationsResponse> response = blockchainService.listNotifications(listNotificationsOptionsModel)
+        .execute();
     assertNotNull(response);
     GetNotificationsResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3783,8 +2976,8 @@ public class BlockchainTest extends PowerMockTestCase {
     Map<String, String> query = TestUtilities.parseQueryString(request);
     assertNotNull(query);
     // Get query params
-    assertEquals(Double.valueOf(query.get("limit")), Double.valueOf("1"));
-    assertEquals(Double.valueOf(query.get("skip")), Double.valueOf("1"));
+    assertEquals(query.get("limit"), "1.0");
+    assertEquals(query.get("skip"), "1.0");
     assertEquals(query.get("component_id"), "MyPeer");
     // Check request path
     String parsedPath = TestUtilities.parseReqPath(request);
@@ -3797,20 +2990,17 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"ok\", \"tx_id\": \"abcde\"}";
     String deleteSigTxPath = "/ak/api/v3/signature_collections/testString";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the DeleteSigTxOptions model
-    DeleteSigTxOptions deleteSigTxOptionsModel = new DeleteSigTxOptions.Builder()
-    .id("testString")
-    .build();
+    DeleteSigTxOptions deleteSigTxOptionsModel = new DeleteSigTxOptions.Builder().id("testString").build();
 
     // Invoke operation with valid options model (positive test)
-    Response<DeleteSignatureCollectionResponse> response = blockchainService.deleteSigTx(deleteSigTxOptionsModel).execute();
+    Response<DeleteSignatureCollectionResponse> response = blockchainService.deleteSigTx(deleteSigTxOptionsModel)
+        .execute();
     assertNotNull(response);
     DeleteSignatureCollectionResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3847,20 +3037,19 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"ok\", \"details\": \"archived 3 notification(s)\"}";
     String archiveNotificationsPath = "/ak/api/v3/notifications/bulk";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the ArchiveNotificationsOptions model
     ArchiveNotificationsOptions archiveNotificationsOptionsModel = new ArchiveNotificationsOptions.Builder()
-    .notificationIds(new java.util.ArrayList<String>(java.util.Arrays.asList("c9d00ebf849051e4f102008dc0be2488")))
-    .build();
+        .notificationIds(new java.util.ArrayList<String>(java.util.Arrays.asList("c9d00ebf849051e4f102008dc0be2488")))
+        .build();
 
     // Invoke operation with valid options model (positive test)
-    Response<ArchiveResponse> response = blockchainService.archiveNotifications(archiveNotificationsOptionsModel).execute();
+    Response<ArchiveResponse> response = blockchainService.archiveNotifications(archiveNotificationsOptionsModel)
+        .execute();
     assertNotNull(response);
     ArchiveResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3897,10 +3086,8 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"restarting - give me 5-30 seconds\"}";
     String restartPath = "/ak/api/v3/restart";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
@@ -3933,10 +3120,8 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"delete submitted\"}";
     String deleteAllSessionsPath = "/ak/api/v3/sessions";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
@@ -3944,7 +3129,8 @@ public class BlockchainTest extends PowerMockTestCase {
     DeleteAllSessionsOptions deleteAllSessionsOptionsModel = new DeleteAllSessionsOptions();
 
     // Invoke operation with valid options model (positive test)
-    Response<DeleteAllSessionsResponse> response = blockchainService.deleteAllSessions(deleteAllSessionsOptionsModel).execute();
+    Response<DeleteAllSessionsResponse> response = blockchainService.deleteAllSessions(deleteAllSessionsOptionsModel)
+        .execute();
     assertNotNull(response);
     DeleteAllSessionsResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -3969,10 +3155,8 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"ok\", \"details\": \"deleted 101 notification(s)\"}";
     String deleteAllNotificationsPath = "/ak/api/v3/notifications/purge";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
@@ -3980,7 +3164,8 @@ public class BlockchainTest extends PowerMockTestCase {
     DeleteAllNotificationsOptions deleteAllNotificationsOptionsModel = new DeleteAllNotificationsOptions();
 
     // Invoke operation with valid options model (positive test)
-    Response<DeleteAllNotificationsResponse> response = blockchainService.deleteAllNotifications(deleteAllNotificationsOptionsModel).execute();
+    Response<DeleteAllNotificationsResponse> response = blockchainService
+        .deleteAllNotifications(deleteAllNotificationsOptionsModel).execute();
     assertNotNull(response);
     DeleteAllNotificationsResponse responseObj = response.getResult();
     assertNotNull(responseObj);
@@ -4005,10 +3190,8 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "{\"message\": \"ok\", \"flushed\": [\"iam_cache\"]}";
     String clearCachesPath = "/ak/api/v3/cache";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "application/json")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setHeader("Content-type", "application/json").setResponseCode(200)
+        .setBody(mockResponseBody));
 
     constructClientService();
 
@@ -4041,20 +3224,13 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "";
     String getPostmanPath = "/ak/api/v3/postman";
 
-    server.enqueue(new MockResponse()
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(new MockResponse().setResponseCode(200).setBody(mockResponseBody));
 
     constructClientService();
 
     // Construct an instance of the GetPostmanOptions model
-    GetPostmanOptions getPostmanOptionsModel = new GetPostmanOptions.Builder()
-    .authType("bearer")
-    .token("testString")
-    .apiKey("testString")
-    .username("admin")
-    .password("password")
-    .build();
+    GetPostmanOptions getPostmanOptionsModel = new GetPostmanOptions.Builder().authType("bearer").token("testString")
+        .apiKey("testString").username("admin").password("password").build();
 
     // Invoke operation with valid options model (positive test)
     Response<Void> response = blockchainService.getPostman(getPostmanOptionsModel).execute();
@@ -4100,10 +3276,8 @@ public class BlockchainTest extends PowerMockTestCase {
     String mockResponseBody = "\"operationResponse\"";
     String getSwaggerPath = "/ak/api/v3/openapi";
 
-    server.enqueue(new MockResponse()
-    .setHeader("Content-type", "text/plain")
-    .setResponseCode(200)
-    .setBody(mockResponseBody));
+    server.enqueue(
+        new MockResponse().setHeader("Content-type", "text/plain").setResponseCode(200).setBody(mockResponseBody));
 
     constructClientService();
 
@@ -4130,16 +3304,15 @@ public class BlockchainTest extends PowerMockTestCase {
     assertEquals(parsedPath, getSwaggerPath);
   }
 
-  /** Initialize the server */
+  /** Initialize the server. */
   @BeforeMethod
   public void setUpMockServer() {
     try {
-        server = new MockWebServer();
-        // register handler
-        server.start();
-        }
-    catch (IOException err) {
-        fail("Failed to instantiate mock web server");
+      server = new MockWebServer();
+      // register handler
+      server.start();
+    } catch (IOException err) {
+      fail("Failed to instantiate mock web server");
     }
   }
 
