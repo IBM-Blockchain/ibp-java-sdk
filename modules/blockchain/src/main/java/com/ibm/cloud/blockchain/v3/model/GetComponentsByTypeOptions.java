@@ -20,9 +20,9 @@ import com.ibm.cloud.sdk.core.service.model.GenericModel;
 public class GetComponentsByTypeOptions extends GenericModel {
 
   /**
-   * The type to filter components on.
+   * The type of component to filter components on.
    */
-  public interface ComponentType {
+  public interface Type {
     /** fabric-peer. */
     String FABRIC_PEER = "fabric-peer";
     /** fabric-orderer. */
@@ -71,7 +71,7 @@ public class GetComponentsByTypeOptions extends GenericModel {
     String USE = "use";
   }
 
-  protected String componentType;
+  protected String type;
   protected String deploymentAttrs;
   protected String parsedCerts;
   protected String cache;
@@ -80,13 +80,13 @@ public class GetComponentsByTypeOptions extends GenericModel {
    * Builder.
    */
   public static class Builder {
-    private String componentType;
+    private String type;
     private String deploymentAttrs;
     private String parsedCerts;
     private String cache;
 
     private Builder(GetComponentsByTypeOptions getComponentsByTypeOptions) {
-      this.componentType = getComponentsByTypeOptions.componentType;
+      this.type = getComponentsByTypeOptions.type;
       this.deploymentAttrs = getComponentsByTypeOptions.deploymentAttrs;
       this.parsedCerts = getComponentsByTypeOptions.parsedCerts;
       this.cache = getComponentsByTypeOptions.cache;
@@ -101,10 +101,10 @@ public class GetComponentsByTypeOptions extends GenericModel {
     /**
      * Instantiates a new builder with required properties.
      *
-     * @param componentType the componentType
+     * @param type the type
      */
-    public Builder(String componentType) {
-      this.componentType = componentType;
+    public Builder(String type) {
+      this.type = type;
     }
 
     /**
@@ -117,13 +117,13 @@ public class GetComponentsByTypeOptions extends GenericModel {
     }
 
     /**
-     * Set the componentType.
+     * Set the type.
      *
-     * @param componentType the componentType
+     * @param type the type
      * @return the GetComponentsByTypeOptions builder
      */
-    public Builder componentType(String componentType) {
-      this.componentType = componentType;
+    public Builder type(String type) {
+      this.type = type;
       return this;
     }
 
@@ -162,9 +162,9 @@ public class GetComponentsByTypeOptions extends GenericModel {
   }
 
   protected GetComponentsByTypeOptions(Builder builder) {
-    com.ibm.cloud.sdk.core.util.Validator.notEmpty(builder.componentType,
-      "componentType cannot be empty");
-    componentType = builder.componentType;
+    com.ibm.cloud.sdk.core.util.Validator.notEmpty(builder.type,
+      "type cannot be empty");
+    type = builder.type;
     deploymentAttrs = builder.deploymentAttrs;
     parsedCerts = builder.parsedCerts;
     cache = builder.cache;
@@ -180,14 +180,14 @@ public class GetComponentsByTypeOptions extends GenericModel {
   }
 
   /**
-   * Gets the componentType.
+   * Gets the type.
    *
-   * The type to filter components on.
+   * The type of component to filter components on.
    *
-   * @return the componentType
+   * @return the type
    */
-  public String componentType() {
-    return componentType;
+  public String type() {
+    return type;
   }
 
   /**
