@@ -22,6 +22,7 @@ import com.ibm.cloud.blockchain.v3.model.GetMultiComponentsResponse;
 import com.ibm.cloud.sdk.core.http.Response;
 import com.ibm.cloud.sdk.core.http.ServiceCall;
 import com.ibm.cloud.sdk.core.security.IamAuthenticator;
+import com.ibm.cloud.sdk.core.service.exception.ServiceResponseException;
 
 public class App {
 
@@ -32,18 +33,27 @@ public class App {
     public static void main(String[] args) {
         System.out.println("Application to Test Admin Access to IBP");
 
-        // Create an IAM authenticator.
-        IamAuthenticator authenticator = new IamAuthenticator(System.getenv("IAM_API_KEY"));
+        try {
+            // Create an IAM authenticator.
+            IamAuthenticator authenticator = new IamAuthenticator(System.getenv("IAM_API_KEY"));
 
-        Blockchain bc = new Blockchain("myIbp", authenticator);
-        bc.setServiceUrl(System.getenv("IBP_SERVICE_INSTANCE_URL"));
+            Blockchain bc = new Blockchain("myIbp", authenticator);
+            bc.setServiceUrl(System.getenv("IBP_SERVICE_INSTANCE_URL"));
 
-        // get all the peer components
-        GetComponentsByTypeOptions options = new GetComponentsByTypeOptions.Builder().type(Type.FABRIC_PEER).build();
-        ServiceCall<GetMultiComponentsResponse> call = bc.getComponentsByType(options);
-        Response<GetMultiComponentsResponse> response = call.execute();
-        List<GenericComponentResponse> l = response.getResult().getComponents();
+            // get all the peer components
+            GetComponentsByTypeOptions options = new GetComponentsByTypeOptions.Builder().type(Type.FABRIC_PEER)
+                    .build();
+            ServiceCall<GetMultiComponentsResponse> call = bc.getComponentsByType(options);
+            Response<GetMultiComponentsResponse> response = call.execute();
+            List<GenericComponentResponse> l = response.getResult().getComponents();
 
-        System.out.println(l);
+            System.out.println(l);
+        } catch (ServiceResponseException e) {
+
+            // essential to catch and get the debugging information
+            RuntimeException wrappedError = new RuntimeException(e.getDebuggingInfo().toString());
+            wrappedError.initCause(e);
+            throw wrappedError;
+        }
     }
 }

@@ -181,15 +181,16 @@ public class BlockchainIT extends SdkIntegrationTestBase {
                 }
                 try {
 
-                        GetComponentOptions options = new GetComponentOptions.Builder().cache("skip").id(createdCaId)
-                                        .deploymentAttrs("included").build();
+                        GetComponentOptions options = new GetComponentOptions.Builder()
+                                        .cache(GetComponentOptions.Cache.SKIP).id(createdCaId)
+                                        .deploymentAttrs(GetComponentOptions.DeploymentAttrs.INCLUDED).build();
                         ServiceCall<GenericComponentResponse> call = service.getComponent(options);
                         Response<GenericComponentResponse> resp = call.execute();
 
                         assertNotNull(resp);
                         GenericComponentResponse actionresp = resp.getResult();
                         assertNotNull(actionresp);
-
+                        actionresp.getDisplayName();
                         assertEquals(200, resp.getStatusCode());
                 } catch (ServiceResponseException e) {
                         Exception wrappedError = new Exception(e.getDebuggingInfo().toString());

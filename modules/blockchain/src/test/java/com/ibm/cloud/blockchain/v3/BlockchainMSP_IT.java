@@ -16,7 +16,6 @@ package com.ibm.cloud.blockchain.v3;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.spy;
 
 import java.io.InputStream;
 import java.util.Arrays;
